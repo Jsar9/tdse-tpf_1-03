@@ -72,6 +72,8 @@ void Error_Handler(void);
 #define D11_GPIO_Port GPIOA
 #define D6_Pin GPIO_PIN_10
 #define D6_GPIO_Port GPIOB
+#define BTN_SETUP_Pin GPIO_PIN_12
+#define BTN_SETUP_GPIO_Port GPIOB
 #define LED_WARNING_Pin GPIO_PIN_13
 #define LED_WARNING_GPIO_Port GPIOB
 #define BTN_F3_Pin GPIO_PIN_14
@@ -114,6 +116,10 @@ void Error_Handler(void);
 #define D4_GPIO_Port GPIOB
 #define D10_Pin GPIO_PIN_6
 #define D10_GPIO_Port GPIOB
+#define BTN_CLOSE_DOOR_Pin GPIO_PIN_8
+#define BTN_CLOSE_DOOR_GPIO_Port GPIOB
+#define BTN_OPEN_DOOR_Pin GPIO_PIN_9
+#define BTN_OPEN_DOOR_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

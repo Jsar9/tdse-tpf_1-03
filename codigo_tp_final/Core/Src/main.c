@@ -243,6 +243,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : BTN_SETUP_Pin BTN_F3_Pin BTN_F2_Pin BTN_CLOSE_DOOR_Pin
+                           BTN_OPEN_DOOR_Pin */
+  GPIO_InitStruct.Pin = BTN_SETUP_Pin|BTN_F3_Pin|BTN_F2_Pin|BTN_CLOSE_DOOR_Pin
+                          |BTN_OPEN_DOOR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
   /*Configure GPIO pin : LED_WARNING_Pin */
   GPIO_InitStruct.Pin = LED_WARNING_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -250,16 +258,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_WARNING_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : BTN_F3_Pin BTN_F2_Pin */
-  GPIO_InitStruct.Pin = BTN_F3_Pin|BTN_F2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
   /*Configure GPIO pins : BTN_F1_Pin BTN_DOOR_Pin BTN_PERSON_Pin BTN_CALL_F3_Pin
                            BTN_CALL_F2_Pin BTN_CALL_F1_Pin */
   GPIO_InitStruct.Pin = BTN_F1_Pin|BTN_DOOR_Pin|BTN_PERSON_Pin|BTN_CALL_F3_Pin
                           |BTN_CALL_F2_Pin|BTN_CALL_F1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : D9_Pin */
