@@ -62,19 +62,20 @@ extern "C" {
  */
 
 /* Events to excite Task System */
-typedef enum task_system_ev {EV_SYS_XX_IDLE,
-							 EV_SYS_XX_ACTIVE} task_system_ev_t;
+typedef enum task_system_ev {EV_SYS_BTN_FLOOR_PRESSED, EV_SYS_BTN_FLOOR_UNPRESSED, EV_SYS_CLOSE_DOOR_BTN,
+							EV_SYS_OPEN_DOOR_BTN, EV_SYS_BTN_DOOR_UNPRESSED, EV_SYS_SENSOR_DOOR_ACTIVATED,
+							EV_SYS_SENSOR_DOOR_DESACTIVATED, EV_SYS_IR_P, EV_SYS_EXTERN_BTN_FLOOR} task_system_ev_t;
 
 /* State of Task System */
-typedef enum task_system_st {ST_SYS_XX_IDLE,
-							 ST_SYS_XX_ACTIVE} task_system_st_t;
+typedef enum task_system_st {ST_SYS_OPEN_DOOR, ST_SYS_CLOSING_DOOR, ST_SYS_CLOSED_DOOR, ST_SYS_MOVING_UP,
+							ST_SYS_MOVING_DOWN, ST_SYS_OPENING_DOOR} task_system_st_t;
 
 typedef struct
 {
 	uint32_t			tick;
 	task_system_st_t	state;
 	task_system_ev_t	event;
-	bool				flag;
+	int                 current_floor;
 } task_system_dta_t;
 
 /********************** external data declaration ****************************/
