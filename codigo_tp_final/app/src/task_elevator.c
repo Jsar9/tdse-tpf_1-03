@@ -30,7 +30,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  *
- * @file   : task_system.c
+ * @file   : task_elevator.c
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
@@ -38,6 +38,8 @@
 
 /********************** inclusions *******************************************/
 /* Project includes. */
+#include <task_elevator_attribute.h>
+#include <task_elevator_interface.h>
 #include "main.h"
 
 /* Demo includes. */
@@ -47,8 +49,6 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
-#include "task_system_attribute.h"
-#include "task_system_interface.h"
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
 
@@ -60,81 +60,87 @@
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
 
-/********************** internal data declaration ****************************/
-task_system_dta_t task_system_dta =
-	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false};
+#define INIT_FLOOR 0
 
-#define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
+/********************** internal data declaration ****************************/
+task_elevator_dta_t task_elevator_dta =
+	{DEL_SYS_XX_MIN, ST_SYS_OPEN_DOOR, EV_SYS_BTN_FLOOR_UNPRESSED, true, INIT_FLOOR};
+
+#define ELEVATOR_DTA_QTY	(sizeof(task_elevator_dta)/sizeof(task_elevator_dta_t))
 
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
-const char *p_task_system 		= "Task System (System Statechart)";
-const char *p_task_system_ 		= "Non-Blocking & Update By Time Code";
+const char *p_task_elevator 		= "Task elevator (elevator Statechart)";
+const char *p_task_elevator_ 		= "Non-Blocking & Update By Time Code";
 
 /********************** external data declaration ****************************/
-uint32_t g_task_system_cnt;
-volatile uint32_t g_task_system_tick_cnt;
+uint32_t g_task_elevator_cnt;
+volatile uint32_t g_task_elevator_tick_cnt;
 
 /********************** external functions definition ************************/
-void task_system_init(void *parameters)
+void task_elevator_init(void *parameters)
 {
-	task_system_dta_t 	*p_task_system_dta;
-	task_system_st_t	state;
-	task_system_ev_t	event;
+	task_elevator_dta_t 	*p_task_elevator_dta;
+	task_elevator_st_t	state;
+	task_elevator_ev_t	event;
 	bool b_event;
+	int current_floor;
 
 	/* Print out: Task Initialized */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_system_init), p_task_system);
-	LOGGER_LOG("  %s is a %s\r\n", GET_NAME(task_system), p_task_system_);
+	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_elevator_init), p_task_elevator);
+	LOGGER_LOG("  %s is a %s\r\n", GET_NAME(task_elevator), p_task_elevator_);
 
-	g_task_system_cnt = G_TASK_SYS_CNT_INI;
+	g_task_elevator_cnt = G_TASK_SYS_CNT_INI;
 
 	/* Print out: Task execution counter */
-	LOGGER_LOG("   %s = %lu\r\n", GET_NAME(g_task_system_cnt), g_task_system_cnt);
+	LOGGER_LOG("   %s = %lu\r\n", GET_NAME(g_task_elevator_cnt), g_task_elevator_cnt);
 
-	init_queue_event_task_system();
+	init_queue_event_task_elevator();
 
 	/* Update Task Actuator Configuration & Data Pointer */
-	p_task_system_dta = &task_system_dta;
+	p_task_elevator_dta = &task_elevator_dta;
 
 	/* Print out: Task execution FSM */
-	state = p_task_system_dta->state;
+	state = p_task_elevator_dta->state;
 	LOGGER_LOG("   %s = %lu", GET_NAME(state), (uint32_t)state);
 
-	event = p_task_system_dta->event;
+	event = p_task_elevator_dta->event;
 	LOGGER_LOG("   %s = %lu", GET_NAME(event), (uint32_t)event);
 
-	b_event = p_task_system_dta->flag;
+	b_event = p_task_elevator_dta->flag;
 	LOGGER_LOG("   %s = %s\r\n", GET_NAME(b_event), (b_event ? "true" : "false"));
 
-	g_task_system_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
+	current_floor = p_task_elevator_dta->current_floor;
+	LOGGER_LOG("%s = %d\r\n", GET_NAME(current_floor), current_floor);
+
+	g_task_elevator_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
 }
 
-void task_system_update(void *parameters)
+void task_elevator_update(void *parameters)
 {
-	task_system_dta_t *p_task_system_dta;
+	task_elevator_dta_t *p_task_elevator_dta;
 	bool b_time_update_required = false;
 
-	/* Update Task System Counter */
-	g_task_system_cnt++;
+	/* Update Task elevator Counter */
+	g_task_elevator_cnt++;
 
-	/* Protect shared resource (g_task_system_tick) */
+	/* Protect shared resource (g_task_elevator_tick) */
 	__asm("CPSID i");	/* disable interrupts*/
-    if (G_TASK_SYS_TICK_CNT_INI < g_task_system_tick_cnt)
+    if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
     {
-    	g_task_system_tick_cnt--;
+    	g_task_elevator_tick_cnt--;
     	b_time_update_required = true;
     }
     __asm("CPSIE i");	/* enable interrupts*/
 
     while (b_time_update_required)
     {
-		/* Protect shared resource (g_task_system_tick) */
+		/* Protect shared resource (g_task_elevator_tick) */
 		__asm("CPSID i");	/* disable interrupts*/
-		if (G_TASK_SYS_TICK_CNT_INI < g_task_system_tick_cnt)
+		if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
 		{
-			g_task_system_tick_cnt--;
+			g_task_elevator_tick_cnt--;
 			b_time_update_required = true;
 		}
 		else
@@ -143,37 +149,37 @@ void task_system_update(void *parameters)
 		}
 		__asm("CPSIE i");	/* enable interrupts*/
 
-    	/* Update Task System Data Pointer */
-		p_task_system_dta = &task_system_dta;
+    	/* Update Task elevator Data Pointer */
+		p_task_elevator_dta = &task_elevator_dta;
 
-		if (true == any_event_task_system())
+		if (true == any_event_task_elevator())
 		{
-			p_task_system_dta->flag = true;
-			p_task_system_dta->event = get_event_task_system();
+			p_task_elevator_dta->flag = true;
+			p_task_elevator_dta->event = get_event_task_elevator();
 		}
 
-		switch (p_task_system_dta->state)
+		switch (p_task_elevator_dta->state)
 		{
 			case ST_SYS_XX_IDLE:
 
-				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_system_dta->event))
+				if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_elevator_dta->event))
 				{
-					p_task_system_dta->flag = false;
+					p_task_elevator_dta->flag = false;
 					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_B);
-					p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
+					p_task_elevator_dta->state = ST_SYS_XX_ACTIVE;
 				}
 
 				break;
 
 			case ST_SYS_XX_ACTIVE:
 
-				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_IDLE == p_task_system_dta->event))
+				if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_IDLE == p_task_elevator_dta->event))
 				{
-					p_task_system_dta->flag = false;
+					p_task_elevator_dta->flag = false;
 					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_B);
-					p_task_system_dta->state = ST_SYS_XX_IDLE;
+					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
+					p_task_elevator_dta->state = ST_SYS_XX_IDLE;
 				}
 
 				break;

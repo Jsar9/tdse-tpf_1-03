@@ -29,17 +29,18 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_system_attribute.h
+ * @file   : task_elevator_attribute.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
-#define TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
+#ifndef TASK_INC_TASK_ELEVATOR_ATTRIBUTE_H_
+#define TASK_INC_TASK_ELEVATOR_ATTRIBUTE_H_
 
 #include <stdint.h>   // Para uint32_t, uint8_t, etc.
 #include <stdbool.h>  // Para bool, true, false
+
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -51,7 +52,7 @@ extern "C" {
 /********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
-/* system Statechart - State Transition Table */
+/* elevator Statechart - State Transition Table */
 /* 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
  * 	| Current               | Event                 |                       | Next                  |                       |
  * 	| State                 | (Parameters)          | [Guard]               | State                 | Actions               |
@@ -64,24 +65,28 @@ extern "C" {
  * 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
  */
 
-/* Events to excite Task system */
-typedef enum task_system_ev {EV_SYS_XX_IDLE,
-							 EV_SYS_XX_ACTIVE} task_system_ev_t;
+/* Events to excite Task elevator */
+typedef enum task_elevator_ev {EV_SYS_BTN_FLOOR_PRESSED, EV_SYS_BTN_FLOOR_UNPRESSED, EV_SYS_CLOSE_DOOR_BTN,
+							EV_SYS_OPEN_DOOR_BTN, EV_SYS_BTN_DOOR_UNPRESSED, EV_SYS_SENSOR_DOOR_ACTIVATED,
+							EV_SYS_SENSOR_DOOR_DESACTIVATED, EV_SYS_IR_P, EV_SYS_EXTERN_BTN_FLOOR} task_elevator_ev_t;
 
-/* State of Task system */
-typedef enum task_system_st {ST_SYS_XX_IDLE,
-							 ST_SYS_XX_ACTIVE} task_system_st_t;
+/* State of Task elevator */
+typedef enum task_elevator_st {ST_SYS_OPEN_DOOR, ST_SYS_CLOSING_DOOR, ST_SYS_CLOSED_DOOR, ST_SYS_MOVING_UP,
+							ST_SYS_MOVING_DOWN, ST_SYS_OPENING_DOOR} task_elevator_st_t;
 
 typedef struct
 {
 	uint32_t			tick;
-	task_system_st_t	state;
-	task_system_ev_t	event;
-	bool				flag;
-} task_system_dta_t;
+	task_elevator_st_t	state;
+	task_elevator_ev_t	event;
+	bool 				flag;
+	unsigned int 		max_floor; /*It will be set in setup mode*/
+	int 				current_floor; /*Stores the current_floor value*/
+	int* 				solicited_floor; /*Its an array of max_floor size*/
+} task_elevator_dta_t;
 
 /********************** external data declaration ****************************/
-extern task_system_dta_t task_system_dta;
+extern task_elevator_dta_t task_elevator_dta;
 
 /********************** external functions declaration ***********************/
 
@@ -90,6 +95,6 @@ extern task_system_dta_t task_system_dta;
 }
 #endif
 
-#endif /* TASK_INC_TASK_system_ATTRIBUTE_H_ */
+#endif /* TASK_INC_TASK_elevator_ATTRIBUTE_H_ */
 
 /********************** end of file ******************************************/

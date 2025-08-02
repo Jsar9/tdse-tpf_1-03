@@ -61,8 +61,8 @@ all: main-build
 main-build: codigo_tp_final.elf secondary-outputs
 
 # Tool invocations
-codigo_tp_final.elf codigo_tp_final.map: $(OBJS) $(USER_OBJS) C:\Users\pc\Desktop\FIUBA\2025\ -\ 1C\TALLER\ DE\ SISTEMAS\ EMBEBIDOS\Archivos\ STM32CubeIDE\tdse-tpf_1-03-main\codigo_tp_final\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "codigo_tp_final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\pc\Desktop\FIUBA\2025 - 1C\TALLER DE SISTEMAS EMBEBIDOS\Archivos STM32CubeIDE\tdse-tpf_1-03-main\codigo_tp_final\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="codigo_tp_final.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+codigo_tp_final.elf codigo_tp_final.map: $(OBJS) $(USER_OBJS) C:\Users\solek\Desktop\Facu\LabSE\tp_final\codigo\codigo_tp_final\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "codigo_tp_final.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\solek\Desktop\Facu\LabSE\tp_final\codigo\codigo_tp_final\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="codigo_tp_final.map" -Wl,--gc-sections -static -specs=rdimon.specs --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

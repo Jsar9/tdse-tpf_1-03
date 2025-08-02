@@ -1,5 +1,6 @@
-app/src/task_sensor.o: ../app/src/task_sensor.c ../Core/Inc/main.h \
- ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
+app/src/task_sensor.o: ../app/src/task_sensor.c \
+ ../app/inc/task_system_attribute.h ../app/inc/task_system_interface.h \
+ ../Core/Inc/main.h ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h \
  ../Core/Inc/stm32f1xx_hal_conf.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h \
@@ -23,8 +24,9 @@ app/src/task_sensor.o: ../app/src/task_sensor.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../app/inc/logger.h ../app/inc/dwt.h ../app/inc/board.h ../app/inc/app.h \
- ../app/inc/task_sensor_attribute.h ../app/inc/task_system_attribute.h \
- ../app/inc/task_system_interface.h
+ ../app/inc/task_sensor_attribute.h
+../app/inc/task_system_attribute.h:
+../app/inc/task_system_interface.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -54,5 +56,3 @@ app/src/task_sensor.o: ../app/src/task_sensor.c ../Core/Inc/main.h \
 ../app/inc/board.h:
 ../app/inc/app.h:
 ../app/inc/task_sensor_attribute.h:
-../app/inc/task_system_attribute.h:
-../app/inc/task_system_interface.h:

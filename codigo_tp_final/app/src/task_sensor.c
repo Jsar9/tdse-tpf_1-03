@@ -38,6 +38,8 @@
 
 /********************** inclusions *******************************************/
 /* Project includes. */
+#include <task_system_attribute.h>
+#include <task_system_interface.h>
 #include "main.h"
 
 /* Demo includes. */
@@ -48,8 +50,6 @@
 #include "board.h"
 #include "app.h"
 #include "task_sensor_attribute.h"
-#include "task_system_attribute.h"
-#include "task_system_interface.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_SEN_CNT_INIT			0ul

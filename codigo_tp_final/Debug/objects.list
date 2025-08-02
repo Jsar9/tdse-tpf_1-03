@@ -21,6 +21,8 @@
 "./app/src/logger.o"
 "./app/src/task_actuator.o"
 "./app/src/task_actuator_interface.o"
+"./app/src/task_elevator.o"
+"./app/src/task_elevator_interface.o"
 "./app/src/task_menu.o"
 "./app/src/task_menu_interface.o"
 "./app/src/task_sensor.o"

@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_system_attribute.h
+ * @file   : task_elevator.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
-#define TASK_INC_TASK_SYSTEM_ATTRIBUTE_H_
+#ifndef TASK_INC_TASK_ELEVATOR_H_
+#define TASK_INC_TASK_ELEVATOR_H_
 
 #include <stdint.h>   // Para uint32_t, uint8_t, etc.
 #include <stdbool.h>  // Para bool, true, false
@@ -51,45 +51,20 @@ extern "C" {
 /********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
-/* system Statechart - State Transition Table */
-/* 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
- * 	| Current               | Event                 |                       | Next                  |                       |
- * 	| State                 | (Parameters)          | [Guard]               | State                 | Actions               |
- * 	|=======================+=======================+=======================+=======================+=======================|
- * 	| ST_SYS_XX_IDLE        | EV_SYS_XX_ACTIVE      |                       | ST_SYS_XX_ACTIVE      | put_event_t.._actuator|
- * 	|                       |                       |                       |                       | (event, identifier)   |
- * 	|-----------------------+-----------------------+-----------------------+-----------------------+-----------------------|
- * 	| ST_SYS_XX_ACTIVE      | EV_SYS_XX_IDLE        |                       | ST_SYS_XX_IDLE        | put_event_t.._actuator|
- * 	|                       |                       |                       |                       | (event, identifier)   |
- * 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
- */
-
-/* Events to excite Task system */
-typedef enum task_system_ev {EV_SYS_XX_IDLE,
-							 EV_SYS_XX_ACTIVE} task_system_ev_t;
-
-/* State of Task system */
-typedef enum task_system_st {ST_SYS_XX_IDLE,
-							 ST_SYS_XX_ACTIVE} task_system_st_t;
-
-typedef struct
-{
-	uint32_t			tick;
-	task_system_st_t	state;
-	task_system_ev_t	event;
-	bool				flag;
-} task_system_dta_t;
 
 /********************** external data declaration ****************************/
-extern task_system_dta_t task_system_dta;
+extern uint32_t g_task_elevator_cnt;
+extern volatile uint32_t g_task_elevator_tick_cnt;
 
 /********************** external functions declaration ***********************/
+extern void task_elevator_init(void *parameters);
+extern void task_elevator_update(void *parameters);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_INC_TASK_system_ATTRIBUTE_H_ */
+#endif /* TASK_INC_TASK_elevator_H_ */
 
 /********************** end of file ******************************************/
