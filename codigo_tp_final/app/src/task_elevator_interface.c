@@ -166,7 +166,7 @@ void set_qty_floor (task_elevator_dta_t* self, unsigned int qty_floor){
 }
 
 /*
-int* create_floor_array(task_elevator_dta_t* self){
+int* create_solicited_floor_array(task_elevator_dta_t* self){
 	if(!self->initialized && !self->solicited_floor && self->qty_floor>0){
 
 	}
