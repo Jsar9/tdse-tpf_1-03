@@ -49,6 +49,9 @@ extern "C" {
 /********************** inclusions *******************************************/
 
 /********************** macros ***********************************************/
+#define FLOOR_00 0
+#define FLOOR_01 1
+#define FLOOR_02 2
 
 /********************** typedef **********************************************/
 /* system Statechart - State Transition Table */
@@ -68,8 +71,7 @@ extern "C" {
 typedef enum task_system_ev {EV_SYS_XX_IDLE,
 							 EV_SYS_FLOOR_00,
 							 EV_SYS_FLOOR_01,
-							 EV_SYS_FLOOR_02,
-							 EV_SYS_FLOOR_03} task_system_ev_t;
+							 EV_SYS_FLOOR_02} task_system_ev_t;
 
 /* State of Task system */
 typedef enum task_system_st {ST_SYS_XX_IDLE,

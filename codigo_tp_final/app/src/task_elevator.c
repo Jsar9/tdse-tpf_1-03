@@ -38,6 +38,7 @@
 
 /********************** inclusions *******************************************/
 /* Project includes. */
+#include <stdlib.h>
 #include <task_elevator_attribute.h>
 #include <task_elevator_interface.h>
 #include "main.h"
@@ -60,11 +61,13 @@
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
 
-#define INIT_FLOOR 0
+
 
 /********************** internal data declaration ****************************/
-task_elevator_dta_t task_elevator_dta =
-	{DEL_SYS_XX_MIN, ST_SYS_OPEN_DOOR, EV_SYS_BTN_FLOOR_UNPRESSED, true, INIT_FLOOR};
+/*The elevator begins without can be used. First of all, it needs to be initialized by setup mode*/
+task_elevator_dta_t task_elevator_dta= { DEL_SYS_XX_MIN, ST_SYS_IDLE, EV_SYS_BTN_FLOOR_UNPRESSED, false,
+		0,0,NULL,false
+};
 
 #define ELEVATOR_DTA_QTY	(sizeof(task_elevator_dta)/sizeof(task_elevator_dta_t))
 
@@ -87,34 +90,40 @@ void task_elevator_init(void *parameters)
 	bool b_event;
 	int current_floor;
 
-	/* Print out: Task Initialized */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_elevator_init), p_task_elevator);
-	LOGGER_LOG("  %s is a %s\r\n", GET_NAME(task_elevator), p_task_elevator_);
-
-	g_task_elevator_cnt = G_TASK_SYS_CNT_INI;
-
-	/* Print out: Task execution counter */
-	LOGGER_LOG("   %s = %lu\r\n", GET_NAME(g_task_elevator_cnt), g_task_elevator_cnt);
-
-	init_queue_event_task_elevator();
-
 	/* Update Task Actuator Configuration & Data Pointer */
 	p_task_elevator_dta = &task_elevator_dta;
 
-	/* Print out: Task execution FSM */
-	state = p_task_elevator_dta->state;
-	LOGGER_LOG("   %s = %lu", GET_NAME(state), (uint32_t)state);
 
-	event = p_task_elevator_dta->event;
-	LOGGER_LOG("   %s = %lu", GET_NAME(event), (uint32_t)event);
+	/*Firstly the elevator must be initialized */
+	if(p_task_elevator_dta->initialized)
+	{
+		/* Print out: Task Initialized */
+		LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_elevator_init), p_task_elevator);
+		LOGGER_LOG("  %s is a %s\r\n", GET_NAME(task_elevator), p_task_elevator_);
 
-	b_event = p_task_elevator_dta->flag;
-	LOGGER_LOG("   %s = %s\r\n", GET_NAME(b_event), (b_event ? "true" : "false"));
+		g_task_elevator_cnt = G_TASK_SYS_CNT_INI;
 
-	current_floor = p_task_elevator_dta->current_floor;
-	LOGGER_LOG("%s = %d\r\n", GET_NAME(current_floor), current_floor);
+		/* Print out: Task execution counter */
+		LOGGER_LOG("   %s = %lu\r\n", GET_NAME(g_task_elevator_cnt), g_task_elevator_cnt);
 
-	g_task_elevator_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
+		init_queue_event_task_elevator();
+
+		/* Print out: Task execution FSM */
+		state = p_task_elevator_dta->state;
+		LOGGER_LOG("   %s = %lu", GET_NAME(state), (uint32_t)state);
+
+		event = p_task_elevator_dta->event;
+		LOGGER_LOG("   %s = %lu", GET_NAME(event), (uint32_t)event);
+
+		b_event = p_task_elevator_dta->flag;
+		LOGGER_LOG("   %s = %s\r\n", GET_NAME(b_event), (b_event ? "true" : "false"));
+
+		current_floor = p_task_elevator_dta->current_floor;
+		LOGGER_LOG("%s = %d\r\n", GET_NAME(current_floor), current_floor);
+
+		g_task_elevator_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
+	}
+
 }
 
 void task_elevator_update(void *parameters)
@@ -122,72 +131,75 @@ void task_elevator_update(void *parameters)
 	task_elevator_dta_t *p_task_elevator_dta;
 	bool b_time_update_required = false;
 
-	/* Update Task elevator Counter */
-	g_task_elevator_cnt++;
+	/* Update Task elevator Data Pointer */
+	p_task_elevator_dta = &task_elevator_dta;
 
-	/* Protect shared resource (g_task_elevator_tick) */
-	__asm("CPSID i");	/* disable interrupts*/
-    if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
-    {
-    	g_task_elevator_tick_cnt--;
-    	b_time_update_required = true;
-    }
-    __asm("CPSIE i");	/* enable interrupts*/
+	if(p_task_elevator_dta -> initialized)
+	{
+		/* Update Task elevator Counter */
+			g_task_elevator_cnt++;
 
-    while (b_time_update_required)
-    {
-		/* Protect shared resource (g_task_elevator_tick) */
-		__asm("CPSID i");	/* disable interrupts*/
-		if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
-		{
-			g_task_elevator_tick_cnt--;
-			b_time_update_required = true;
-		}
-		else
-		{
-			b_time_update_required = false;
-		}
-		__asm("CPSIE i");	/* enable interrupts*/
+			/* Protect shared resource (g_task_elevator_tick) */
+			__asm("CPSID i");	/* disable interrupts*/
+		    if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
+		    {
+		    	g_task_elevator_tick_cnt--;
+		    	b_time_update_required = true;
+		    }
+		    __asm("CPSIE i");	/* enable interrupts*/
 
-    	/* Update Task elevator Data Pointer */
-		p_task_elevator_dta = &task_elevator_dta;
-
-		if (true == any_event_task_elevator())
-		{
-			p_task_elevator_dta->flag = true;
-			p_task_elevator_dta->event = get_event_task_elevator();
-		}
-
-		switch (p_task_elevator_dta->state)
-		{
-			case ST_SYS_XX_IDLE:
-
-				if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_elevator_dta->event))
+		    while (b_time_update_required)
+		    {
+				/* Protect shared resource (g_task_elevator_tick) */
+				__asm("CPSID i");	/* disable interrupts*/
+				if (G_TASK_SYS_TICK_CNT_INI < g_task_elevator_tick_cnt)
 				{
-					p_task_elevator_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
-					p_task_elevator_dta->state = ST_SYS_XX_ACTIVE;
+					g_task_elevator_tick_cnt--;
+					b_time_update_required = true;
+				}
+				else
+				{
+					b_time_update_required = false;
+				}
+				__asm("CPSIE i");	/* enable interrupts*/
+
+				if (true == any_event_task_elevator())
+				{
+					p_task_elevator_dta->flag = true;
+					p_task_elevator_dta->event = get_event_task_elevator();
 				}
 
-				break;
-
-			case ST_SYS_XX_ACTIVE:
-
-				if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_IDLE == p_task_elevator_dta->event))
+				/*switch (p_task_elevator_dta->state)
 				{
-					p_task_elevator_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-					p_task_elevator_dta->state = ST_SYS_XX_IDLE;
-				}
+					case ST_SYS_XX_IDLE:
 
-				break;
+						if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_elevator_dta->event))
+						{
+							p_task_elevator_dta->flag = false;
+							put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
+							put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
+							p_task_elevator_dta->state = ST_SYS_XX_ACTIVE;
+						}
 
-			default:
+						break;
 
-				break;
-		}
+					case ST_SYS_XX_ACTIVE:
+
+						if ((true == p_task_elevator_dta->flag) && (EV_SYS_XX_IDLE == p_task_elevator_dta->event))
+						{
+							p_task_elevator_dta->flag = false;
+							put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
+							put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
+							p_task_elevator_dta->state = ST_SYS_XX_IDLE;
+						}
+
+						break;
+
+					default:
+
+						break;
+				}*/
+			}
 	}
 }
 

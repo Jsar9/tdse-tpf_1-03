@@ -78,7 +78,6 @@ task_menu_dta_t task_menu_dta =
 
 void init_motor (motor_t * motor){
 
-
 	motor -> parameter = 1;
 	motor -> power = false;
 	motor -> speed = 0;

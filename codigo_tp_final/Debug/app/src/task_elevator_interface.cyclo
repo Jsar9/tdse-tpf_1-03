@@ -6,5 +6,7 @@
 ../app/src/task_elevator_interface.c:132:14:search_floor	4
 ../app/src/task_elevator_interface.c:150:5:get_current_floor	1
 ../app/src/task_elevator_interface.c:155:6:set_current_floor	1
-../app/src/task_elevator_interface.c:161:6:put_solicited_floor	6
-../app/src/task_elevator_interface.c:176:6:eliminate_floor	4
+../app/src/task_elevator_interface.c:160:14:get_qty_floor	1
+../app/src/task_elevator_interface.c:164:6:set_qty_floor	1
+../app/src/task_elevator_interface.c:177:6:put_solicited_floor	6
+../app/src/task_elevator_interface.c:192:6:eliminate_floor	4

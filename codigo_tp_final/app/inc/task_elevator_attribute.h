@@ -71,7 +71,7 @@ typedef enum task_elevator_ev {EV_SYS_BTN_FLOOR_PRESSED, EV_SYS_BTN_FLOOR_UNPRES
 							EV_SYS_SENSOR_DOOR_DESACTIVATED, EV_SYS_IR_P, EV_SYS_EXTERN_BTN_FLOOR} task_elevator_ev_t;
 
 /* State of Task elevator */
-typedef enum task_elevator_st {ST_SYS_OPEN_DOOR, ST_SYS_CLOSING_DOOR, ST_SYS_CLOSED_DOOR, ST_SYS_MOVING_UP,
+typedef enum task_elevator_st {ST_SYS_IDLE, ST_SYS_OPEN_DOOR, ST_SYS_CLOSING_DOOR, ST_SYS_CLOSED_DOOR, ST_SYS_MOVING_UP,
 							ST_SYS_MOVING_DOWN, ST_SYS_OPENING_DOOR} task_elevator_st_t;
 
 typedef struct
@@ -80,9 +80,10 @@ typedef struct
 	task_elevator_st_t	state;
 	task_elevator_ev_t	event;
 	bool 				flag;
-	unsigned int 		max_floor; /*It will be set in setup mode*/
+	unsigned int 		qty_floor; /*It will be set in setup mode*/
 	int 				current_floor; /*Stores the current_floor value*/
-	int* 				solicited_floor; /*Its an array of max_floor size*/
+	int* 				solicited_floor; /*Its an array of qty_floor size*/
+	bool				initialized; /*Indicates if the elevator was initialized from the setup mode*/
 } task_elevator_dta_t;
 
 /********************** external data declaration ****************************/
