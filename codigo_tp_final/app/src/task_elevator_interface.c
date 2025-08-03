@@ -111,23 +111,76 @@ bool any_event_task_elevator(void)
 }
 
 
+
+
 /*New Functions*/
+bool is_floor (task_elevator_dta_t* self, int floor)
+{
+	unsigned int i= 0;
+	bool sentinel = false;
+	for(i=0, sentinel = false; i< self->max_floor && !sentinel ; i++)
+	{
+		if(self->solicited_floor[i] == floor)
+		{
+			sentinel = true;
+		}
+	}
+	return sentinel;
+}
+
+
+unsigned int search_floor (task_elevator_dta_t* self, int floor){
+	unsigned int i= 0;
+	bool sentinel = false;
+	for(i=0, sentinel = false; i< self->max_floor && !sentinel ; i++)
+	{
+		if(self->solicited_floor[i] == floor)
+		{
+			sentinel = true;
+		}
+	}
+	return i-1; /*No puede llegar a 0*/
+}
+
+
+
 
 /*This function sets the current_floor to the given value*/
-void put_current_floor (task_elevator_dta_t* self, int current_floor, unsigned int max_floor)
+
+int get_current_floor(task_elevator_dta_t* self)
+{
+	return self->current_floor;
+}
+
+void set_current_floor (task_elevator_dta_t* self, int current_floor, unsigned int max_floor)
 {
 	self-> current_floor = current_floor;
 }
 
 /*This function sets the solicited_floor in the solicited_floor attribute*/
 void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor, unsigned int max_floor){
-
+	unsigned int i = 0;
+	if( self && !is_floor(self, solicited_floor))
+	{	i=0;
+		while(self->solicited_floor[i] != 0 && i < max_floor){
+			i++;
+		}
+		if(i<max_floor)
+		{
+			self->solicited_floor[i]= solicited_floor;
+		}
+	}
 }
 
 /*This function eliminates a floor of the solicited_floor attribute */
-void eliminate_floor (task_elevator_dta_t self, int* floor, unsigned int max_floor)
+void eliminate_floor (task_elevator_dta_t* self, int floor, unsigned int max_floor)
 {
-
+	unsigned int index;
+	if(self && is_floor(self, floor) && floor>0)
+	{
+		index = search_floor(self, floor);
+		self->solicited_floor[index] = 0;
+	}
 }
 
 /********************** end of file ******************************************/

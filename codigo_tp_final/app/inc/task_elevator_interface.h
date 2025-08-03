@@ -63,9 +63,10 @@ extern bool any_event_task_elevator(void);
 /*New Functions*/
 
 /*This function sets the current_floor to the given value*/
-void put_current_floor (task_elevator_dta_t* self, int current_floor, unsigned int max_floor);
+int get_current_floor(task_elevator_dta_t* self);
+void set_current_floor (task_elevator_dta_t* self, int current_floor, unsigned int max_floor);
 void put_solicited_floor (task_elevator_dta_t* self, int* solicited_floor, unsigned int max_floor);
-void eliminate_floor (task_elevator_dta_t self, int* floor, unsigned int max_floor);
+void eliminate_floor (task_elevator_dta_t self, int floor, unsigned int max_floor);
 
 
 /********************** End of CPP guard *************************************/

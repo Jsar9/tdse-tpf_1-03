@@ -52,6 +52,10 @@
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
 
+#include "task_elevator_attribute.h"
+#include "task_elevator_interface.h"
+
+
 /********************** macros and definitions *******************************/
 #define G_TASK_SYS_CNT_INI			0ul
 #define G_TASK_SYS_TICK_CNT_INI		0ul
@@ -73,6 +77,8 @@ const char *p_task_system 		= "Task System (System Statechart)";
 const char *p_task_system_ 		= "Non-Blocking & Update By Time Code";
 
 /********************** external data declaration ****************************/
+
+extern task_elevator_dta_t task_elevator_dta;
 uint32_t g_task_system_cnt;
 volatile uint32_t g_task_system_tick_cnt;
 
@@ -114,6 +120,7 @@ void task_system_init(void *parameters)
 void task_system_update(void *parameters)
 {
 	task_system_dta_t *p_task_system_dta;
+	task_elevator_dta_t* p_task_elevator_dta;
 	bool b_time_update_required = false;
 
 	/* Update Task System Counter */
@@ -145,6 +152,7 @@ void task_system_update(void *parameters)
 
     	/* Update Task System Data Pointer */
 		p_task_system_dta = &task_system_dta;
+		p_task_elevator_dta = &task_elevator_dta;
 
 		if (true == any_event_task_system())
 		{
@@ -156,23 +164,45 @@ void task_system_update(void *parameters)
 		{
 			case ST_SYS_XX_IDLE:
 
-				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_system_dta->event))
-				{
-					p_task_system_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_ON, ID_LED_B);
-					p_task_system_dta->state = ST_SYS_XX_ACTIVE;
-				}
+				if ((true == p_task_system_dta->flag) && (EV_SYS_FLOOR_00 == p_task_system_dta->event))
+								{
+									p_task_system_dta->flag = false;
+									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
+									put_solicited_floor(p_task_elevator_dta, 0 ,p_task_elevator_dta->max_floor);
+									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+								}
 
-				break;
+				if ((true == p_task_system_dta->flag) && (EV_SYS_FLOOR_01 == p_task_system_dta->event))
+								{
+									p_task_system_dta->flag = false;
+									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
+									put_solicited_floor(p_task_elevator_dta, 1 ,p_task_elevator_dta->max_floor);
+									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+								}
+
+				if ((true == p_task_system_dta->flag) && (EV_SYS_FLOOR_02 == p_task_system_dta->event))
+								{
+									p_task_system_dta->flag = false;
+									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
+									put_solicited_floor(p_task_elevator_dta, 2 ,p_task_elevator_dta->max_floor);
+									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+								}
+
+				if ((true == p_task_system_dta->flag) && (EV_SYS_FLOOR_03 == p_task_system_dta->event))
+								{
+									p_task_system_dta->flag = false;
+									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
+									put_solicited_floor(p_task_elevator_dta, 3 ,p_task_elevator_dta->max_floor);
+									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+								}
+			break;
 
 			case ST_SYS_XX_ACTIVE:
 
 				if ((true == p_task_system_dta->flag) && (EV_SYS_XX_IDLE == p_task_system_dta->event))
 				{
 					p_task_system_dta->flag = false;
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_A);
-					put_event_task_actuator(EV_LED_XX_OFF, ID_LED_B);
+
 					p_task_system_dta->state = ST_SYS_XX_IDLE;
 				}
 

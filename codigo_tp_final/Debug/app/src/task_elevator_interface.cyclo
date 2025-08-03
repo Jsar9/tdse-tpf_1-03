@@ -2,3 +2,9 @@
 ../app/src/task_elevator_interface.c:84:6:put_event_task_elevator	2
 ../app/src/task_elevator_interface.c:93:20:get_event_task_elevator	2
 ../app/src/task_elevator_interface.c:108:6:any_event_task_elevator	1
+../app/src/task_elevator_interface.c:117:6:is_floor	4
+../app/src/task_elevator_interface.c:132:14:search_floor	4
+../app/src/task_elevator_interface.c:150:5:get_current_floor	1
+../app/src/task_elevator_interface.c:155:6:set_current_floor	1
+../app/src/task_elevator_interface.c:161:6:put_solicited_floor	6
+../app/src/task_elevator_interface.c:176:6:eliminate_floor	4
