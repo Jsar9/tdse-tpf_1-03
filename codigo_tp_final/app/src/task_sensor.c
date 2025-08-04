@@ -64,9 +64,9 @@ const task_sensor_cfg_t task_sensor_cfg_list[] = {
 	{ID_BTN_A,  BTN_A_PORT,  BTN_A_PIN,  BTN_A_PRESSED, DEL_BTN_XX_MAX,
 	 EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE},
 	{ID_BTN_F1,  BTN_F1_PORT,  BTN_F1_PIN,  BTN_F1_PRESSED, DEL_BTN_XX_MAX,
-	 EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE},
+	 EV_SYS_XX_IDLE,  EV_SYS_FLOOR_00},
 	{ID_BTN_F2,  BTN_F2_PORT,  BTN_F2_PIN,  BTN_F2_PRESSED, DEL_BTN_XX_MAX,
-	EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE},
+	EV_SYS_XX_IDLE,  botonsitobueno},
 	{ID_BTN_F3,  BTN_F3_PORT,  BTN_F3_PIN,  BTN_F3_PRESSED, DEL_BTN_XX_MAX,
 	 EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE},
 	{ID_BTN_CALL_F1,  BTN_CALL_F1_PORT,  BTN_CALL_F1_PIN,  BTN_CALL_F1_PRESSED, DEL_BTN_XX_MAX,
@@ -85,6 +85,7 @@ const task_sensor_cfg_t task_sensor_cfg_list[] = {
 	 EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE},
 	 {ID_BTN_SETUP,  BTN_SETUP_PORT,  BTN_SETUP_PIN,  BTN_SETUP_PRESSED, DEL_BTN_XX_MAX,
 	  EV_SYS_XX_IDLE,  EV_SYS_XX_ACTIVE}
+	/*Faltan agregar botones de persona++ y persona--*/
 };
 
 #define SENSOR_CFG_QTY	(sizeof(task_sensor_cfg_list)/sizeof(task_sensor_cfg_t))
