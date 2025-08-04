@@ -39,6 +39,7 @@
 /********************** inclusions *******************************************/
 /* Project includes. */
 #include <task_elevator_attribute.h>
+#include <stdlib.h>
 #include "main.h"
 
 /* Demo includes. */
@@ -165,13 +166,22 @@ void set_qty_floor (task_elevator_dta_t* self, unsigned int qty_floor){
 	self->qty_floor = qty_floor;
 }
 
-/*
-int* create_solicited_floor_array(task_elevator_dta_t* self){
-	if(!self->initialized && !self->solicited_floor && self->qty_floor>0){
+void set_flag_menu (task_elevator_dta_t* self, bool flag){
+	self->flag = flag;
+}
+bool get_flag_menu (task_elevator_dta_t* self){
+	return self->flag;
+}
 
+
+void elevator_create_solicited_floor_array(task_elevator_dta_t* self){
+	int* aux;
+	if(self && !self->solicited_floor && self->qty_floor){
+		if((aux=malloc(sizeof(int)*self->qty_floor))){ /*aux its an array of int with size qty_floor*/
+			self->solicited_floor = aux;
+		}
 	}
-
-}*/
+}
 
 /*This function sets the solicited_floor in the solicited_floor attribute*/
 void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor, unsigned int qty_floor){

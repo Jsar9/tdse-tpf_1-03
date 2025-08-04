@@ -24,7 +24,8 @@ app/src/task_menu.o: ../app/src/task_menu.c ../Core/Inc/main.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  ../app/inc/logger.h ../app/inc/dwt.h ../app/inc/board.h ../app/inc/app.h \
  ../app/inc/task_menu_attribute.h ../app/inc/task_menu_interface.h \
- ../app/inc/display.h
+ ../app/inc/task_elevator_attribute.h \
+ ../app/inc/task_elevator_interface.h ../app/inc/display.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -55,4 +56,6 @@ app/src/task_menu.o: ../app/src/task_menu.c ../Core/Inc/main.h \
 ../app/inc/app.h:
 ../app/inc/task_menu_attribute.h:
 ../app/inc/task_menu_interface.h:
+../app/inc/task_elevator_attribute.h:
+../app/inc/task_elevator_interface.h:
 ../app/inc/display.h:

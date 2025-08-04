@@ -47,7 +47,11 @@
 #include "board.h"
 #include "task_sensor.h"
 #include "task_menu.h"
+#include "task_actuator.h"
+#include "task_elevator.h"
+#include "task_system.h"
 
+#include "task_elevator_attribute.h"
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI		0ul
 #define G_APP_TICK_CNT_INI	0ul
@@ -70,10 +74,14 @@ typedef struct {
 /********************** internal data declaration ****************************/
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
-		{task_menu_init,	task_menu_update, 		NULL}
+		{task_menu_init,	task_menu_update, 		NULL},
+		{task_actuator_init,	task_actuator_update,	NULL},
+		{task_system_init,		task_system_update,		NULL},
+		{task_elevator_init,		task_elevator_update,		NULL} /*elevator must be the last one*/
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))
+
 
 /********************** internal functions declaration ***********************/
 
@@ -89,11 +97,13 @@ volatile uint32_t g_app_tick_cnt;
 
 task_dta_t task_dta_list[TASK_QTY];
 
+extern task_elevator_dta_t task_elevator_dta;
+
 /********************** external functions definition ************************/
 void app_init(void)
 {
 	uint32_t index;
-
+	task_elevator_dta_t* p_task_elevator_dta_t = &task_elevator_dta;
 	/* Print out: Application Initialized */
 	LOGGER_LOG("\r\n");
 	LOGGER_LOG("%s is running - Tick [mS] = %lu\r\n", GET_NAME(app_init), HAL_GetTick());
@@ -109,12 +119,24 @@ void app_init(void)
 	/* Go through the task arrays */
 	for (index = 0; TASK_QTY > index; index++)
 	{
-		/* Run task_x_init */
-		(*task_cfg_list[index].task_init)(task_cfg_list[index].parameters);
 
+		if(index != TASK_QTY-1)
+		{
+		(*task_cfg_list[index].task_init)(task_cfg_list[index].parameters);
 		/* Init variables */
 		task_dta_list[index].WCET = TASK_X_WCET_INI;
+		}
+
+		if(index == TASK_QTY-1 && p_task_elevator_dta_t->flag){
+			(*task_cfg_list[index].task_init)(task_cfg_list[index].parameters);
+		}
+
 	}
+
+
+
+
+
 
 	cycle_counter_init();
 
@@ -129,6 +151,7 @@ void app_update(void)
 {
 	uint32_t index;
 	uint32_t cycle_counter_time_us;
+	task_elevator_dta_t* p_task_elevator_dta_t = &task_elevator_dta;
 
 	/* Check if it's time to run tasks */
 	if (G_APP_TICK_CNT_INI < g_app_tick_cnt)
@@ -145,7 +168,14 @@ void app_update(void)
 			cycle_counter_reset();
 
     		/* Run task_x_update */
+			if(index != TASK_QTY-1)
+			{
 			(*task_cfg_list[index].task_update)(task_cfg_list[index].parameters);
+			}
+
+			if(index == TASK_QTY-1 && p_task_elevator_dta_t->flag){
+				(*task_cfg_list[index].task_update)(task_cfg_list[index].parameters);
+			}
 
 			cycle_counter_time_us = cycle_counter_time_us();
 

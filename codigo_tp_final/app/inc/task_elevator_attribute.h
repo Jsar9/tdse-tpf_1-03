@@ -79,11 +79,12 @@ typedef struct
 	uint32_t			tick;
 	task_elevator_st_t	state;
 	task_elevator_ev_t	event;
-	bool 				flag;
+	bool 				flag; /*This flag indicates if the normal mode is active*/
 	unsigned int 		qty_floor; /*It will be set in setup mode*/
+	unsigned int 		max_people; /*stores the max qty of people admitted*/
+	unsigned int 		current_people; /*stores the current qty of people inside the elevator*/
 	int 				current_floor; /*Stores the current_floor value*/
 	int* 				solicited_floor; /*Its an array of qty_floor size*/
-	bool				initialized; /*Indicates if the elevator was initialized from the setup mode*/
 } task_elevator_dta_t;
 
 /********************** external data declaration ****************************/

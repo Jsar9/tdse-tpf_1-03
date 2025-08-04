@@ -71,9 +71,14 @@ typedef enum task_menu_ev {EV_MEN_ENT_IDLE,
 
 /* State of Task Menu */
 typedef enum task_menu_st {ST_MENU_1,
-	ST_MENU_2, ST_POWER, ST_SPEED, ST_SPIN, ST_MEN_XX_IDLE} task_menu_st_t;
+	ST_MENU_SETUP, ST_MENU_NORMAL, ST_MENU_MAX_PEOPLE, ST_MENU_QTY_FLOOR, ST_MEN_XX_IDLE} task_menu_st_t;
 
-#define QTY_MOTORS 2
+#define MENU_SETUP	1
+#define MENU_NORMAL	2
+
+
+#define SETUP_OPTION_1 3
+#define SETUP_OPTION_2 4
 
 typedef struct
 {
@@ -81,11 +86,9 @@ typedef struct
 	task_menu_st_t	state;
 	task_menu_ev_t	event;
 	bool			flag;
-	int 	id_motor;
-	int parameter;
-	bool power;
-	int speed;
-	bool spin;
+	unsigned int qty_floor;
+	unsigned int max_people;
+	unsigned int menu; /*this stores the options*/
 
 } task_menu_dta_t;
 

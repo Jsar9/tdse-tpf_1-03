@@ -66,7 +66,7 @@
 /********************** internal data declaration ****************************/
 /*The elevator begins without can be used. First of all, it needs to be initialized by setup mode*/
 task_elevator_dta_t task_elevator_dta= { DEL_SYS_XX_MIN, ST_SYS_IDLE, EV_SYS_BTN_FLOOR_UNPRESSED, false,
-		0,0,NULL,false
+		0,0,0,0,NULL
 };
 
 #define ELEVATOR_DTA_QTY	(sizeof(task_elevator_dta)/sizeof(task_elevator_dta_t))
@@ -95,7 +95,7 @@ void task_elevator_init(void *parameters)
 
 
 	/*Firstly the elevator must be initialized */
-	if(p_task_elevator_dta->initialized)
+	if(p_task_elevator_dta->flag && p_task_elevator_dta->solicited_floor)
 	{
 		/* Print out: Task Initialized */
 		LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_elevator_init), p_task_elevator);
@@ -134,7 +134,7 @@ void task_elevator_update(void *parameters)
 	/* Update Task elevator Data Pointer */
 	p_task_elevator_dta = &task_elevator_dta;
 
-	if(p_task_elevator_dta -> initialized)
+	if(p_task_elevator_dta -> flag && p_task_elevator_dta->solicited_floor)
 	{
 		/* Update Task elevator Counter */
 			g_task_elevator_cnt++;
