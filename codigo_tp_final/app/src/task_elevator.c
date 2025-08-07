@@ -66,7 +66,7 @@
 /********************** internal data declaration ****************************/
 /*The elevator begins without can be used. First of all, it needs to be initialized by setup mode*/
 task_elevator_dta_t task_elevator_dta= { DEL_SYS_XX_MIN, ST_SYS_IDLE, EV_SYS_BTN_FLOOR_UNPRESSED, false,
-		0,0,0,0,0,NULL
+		0,0,0,0,0,0,NULL
 };
 
 #define ELEVATOR_DTA_QTY	(sizeof(task_elevator_dta)/sizeof(task_elevator_dta_t))

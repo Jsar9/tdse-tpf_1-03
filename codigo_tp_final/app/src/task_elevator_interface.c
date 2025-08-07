@@ -142,7 +142,7 @@ unsigned int search_in_solicited_floor_array (task_elevator_dta_t* self, int flo
 				sentinel = true;
 			}
 	}
-	return index-1; /*returns the correct index of the solicited_floor*/
+	return index-1; /*returns the correct index in the solicited_floor*/
 }
 
 
@@ -193,7 +193,7 @@ void elevator_create_solicited_floor_array(task_elevator_dta_t* self){
 }
 
 /*This function sets the solicited_floor as solicited*/
-void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor){
+void elevator_put_solicited_floor (task_elevator_dta_t* self, int solicited_floor){
 	unsigned int index = 0;
 	if(self && self->solicited_floor) /*if the elevator is initialized*/
 	{
@@ -204,7 +204,7 @@ void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor){
 }
 
 /*This function sets the floor as not solicited*/
-void eliminate_solicited_floor (task_elevator_dta_t* self, int floor)
+void elevator_eliminate_solicited_floor (task_elevator_dta_t* self, int floor)
 {
 	unsigned int index = 0;
 	if(self && self->solicited_floor) /*if the elevator is initialized*/

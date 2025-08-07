@@ -203,12 +203,12 @@ void task_menu_update(void *parameters)
 					// actions - enter
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->menu == MENU_NORMAL)
 						{
-							p_task_menu_dta->flag=true;
+							p_task_elevator_dta->flag=true; /*sets the flag in true to activate the normal mode*/
 							p_task_menu_dta->state = ST_MENU_NORMAL;
 						}
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->menu == MENU_SETUP)
 						{
-							p_task_menu_dta->flag=false;
+							p_task_elevator_dta->flag=false;
 							p_task_menu_dta->state = ST_MENU_SETUP;
 						}
 
@@ -259,7 +259,8 @@ void task_menu_update(void *parameters)
 					//actions - enter
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->max_people >0)
 					{
-						p_task_elevator_dta->max_people = p_task_menu_dta->max_people;
+						/*Must be saved the max_people value in the flash memory*/
+						p_task_elevator_dta->max_people = p_task_menu_dta->max_people; /*Sets the max_people value of the menu in the elevator*/
 						p_task_menu_dta->state = ST_MENU_SETUP;
 					}
 
@@ -286,8 +287,8 @@ void task_menu_update(void *parameters)
 					//actions - enter
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->qty_floor >0)
 					{
+						/*Must be saved the qty_floor value in the flash memory*/
 						p_task_elevator_dta->qty_floor = p_task_menu_dta->qty_floor;
-						free(p_task_elevator_dta-> solicited_floor); /*Free the previous pointer before assignment*/
 						elevator_create_solicited_floor_array(p_task_elevator_dta);
 						p_task_menu_dta->state = ST_MENU_SETUP;
 					}
@@ -305,9 +306,9 @@ void task_menu_update(void *parameters)
 
 					break;
 
-				case ST_MENU_NORMAL:
+				case ST_MENU_NORMAL: /*Se debe colocar aquí el comportamiento del Display en modo normal*/
 					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event) /*El botón escape es el único que detona un evento en el menú*/
 					{
 						p_task_menu_dta->state = ST_MENU_1;
 					}

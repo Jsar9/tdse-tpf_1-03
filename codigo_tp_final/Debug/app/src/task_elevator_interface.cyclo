@@ -11,5 +11,5 @@
 ../app/src/task_elevator_interface.c:171:6:set_flag_menu	1
 ../app/src/task_elevator_interface.c:174:6:get_flag_menu	1
 ../app/src/task_elevator_interface.c:178:6:elevator_create_solicited_floor_array	6
-../app/src/task_elevator_interface.c:197:6:put_solicited_floor	3
-../app/src/task_elevator_interface.c:208:6:eliminate_solicited_floor	3
+../app/src/task_elevator_interface.c:196:6:elevator_put_solicited_floor	3
+../app/src/task_elevator_interface.c:207:6:elevator_eliminate_solicited_floor	3
