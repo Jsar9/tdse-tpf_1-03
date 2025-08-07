@@ -287,7 +287,7 @@ void task_menu_update(void *parameters)
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->qty_floor >0)
 					{
 						p_task_elevator_dta->qty_floor = p_task_menu_dta->qty_floor;
-						free(p_task_elevator_dta-> solicited_floor); /*Esto puede ser mejorable*/
+						free(p_task_elevator_dta-> solicited_floor); /*Free the previous pointer before assignment*/
 						elevator_create_solicited_floor_array(p_task_elevator_dta);
 						p_task_menu_dta->state = ST_MENU_SETUP;
 					}

@@ -115,14 +115,16 @@ bool any_event_task_elevator(void)
 
 
 /*New Functions*/
-bool is_floor (task_elevator_dta_t* self, int floor)
+
+/*returns true if the floor is in the solicited_floor array of self*/
+bool is_solicited_floor (task_elevator_dta_t* self, int floor)
 {
 	unsigned int i= 0;
 	bool sentinel = false;
 	for(i=0, sentinel = false; i< self->qty_floor && !sentinel ; i++)
 	{
-		if(self->solicited_floor[i] == floor)
-		{
+		if(self->solicited_floor[i].id_floor == floor && self->solicited_floor[i].solicited )
+		{ /*if the floor is in the array and is solicited*/
 			sentinel = true;
 		}
 	}
@@ -130,17 +132,17 @@ bool is_floor (task_elevator_dta_t* self, int floor)
 }
 
 
-unsigned int search_floor (task_elevator_dta_t* self, int floor){
-	unsigned int i= 0;
+/*returns the index of the floor in the solicited_floor array in self*/
+unsigned int search_in_solicited_floor_array (task_elevator_dta_t* self, int floor){
+	unsigned int index= 0;
 	bool sentinel = false;
-	for(i=0, sentinel = false; i< self->qty_floor && !sentinel ; i++)
+	for(index=0, sentinel = false; index< self->qty_floor && !sentinel ; index++)
 	{
-		if(self->solicited_floor[i] == floor)
-		{
-			sentinel = true;
-		}
+			if(self->solicited_floor[index].id_floor == floor){ /*if index is the position of the floor*/
+				sentinel = true;
+			}
 	}
-	return i-1; /*No puede llegar a 0*/
+	return index-1; /*returns the correct index of the solicited_floor*/
 }
 
 
@@ -173,39 +175,42 @@ bool get_flag_menu (task_elevator_dta_t* self){
 	return self->flag;
 }
 
-
 void elevator_create_solicited_floor_array(task_elevator_dta_t* self){
-	int* aux;
-	if(self && !self->solicited_floor && self->qty_floor){
-		if((aux=malloc(sizeof(int)*self->qty_floor))){ /*aux its an array of int with size qty_floor*/
-			self->solicited_floor = aux;
-		}
-	}
-}
-
-/*This function sets the solicited_floor in the solicited_floor attribute*/
-void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor, unsigned int qty_floor){
+	floor_t* aux;
 	unsigned int i = 0;
-	if( self && !is_floor(self, solicited_floor))
-	{	i=0;
-		while(self->solicited_floor[i] != 0 && i < qty_floor){
-			i++;
-		}
-		if(i<qty_floor)
-		{
-			self->solicited_floor[i]= solicited_floor;
-		}
+	unsigned int j = 0;
+	if(self && self->qty_floor){ /*checks if the qty_floor is positive and if self is not a null pointer*/
+		if((aux=malloc(sizeof(floor_t)*self->qty_floor))){ /*aux its an array of floor_t with size qty_floor*/
+			/*initialize each floor in the array*/
+			for(i=0,j = self->min_floor ;i<self->qty_floor && j< (self->min_floor+self->qty_floor); i++, j++){
+					aux[i].id_floor = j; /*sets the id_floor from min_floor to min_floor+qty_floor*/
+					aux[i].solicited=false; /*initialize the floor as not solicited*/
+				}
+			free(self->solicited_floor); /*free the previous array*/
+			self->solicited_floor = aux; /*assign the new address to the pointer*/
+			}
 	}
 }
 
-/*This function eliminates a floor of the solicited_floor attribute */
-void eliminate_floor (task_elevator_dta_t* self, int floor, unsigned int qty_floor)
-{
-	unsigned int index;
-	if(self && is_floor(self, floor) && floor) /*floor !=0*/
+/*This function sets the solicited_floor as solicited*/
+void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor){
+	unsigned int index = 0;
+	if(self && self->solicited_floor) /*if the elevator is initialized*/
 	{
-		index = search_floor(self, floor);
-		self->solicited_floor[index] = 0;
+		index = search_in_solicited_floor_array(self,solicited_floor); /*gets the index of the floor in the solicited_floor array*/
+		self->solicited_floor[index].solicited=true; /*sets the new floor as solicited*/
+	}
+
+}
+
+/*This function sets the floor as not solicited*/
+void eliminate_solicited_floor (task_elevator_dta_t* self, int floor)
+{
+	unsigned int index = 0;
+	if(self && self->solicited_floor) /*if the elevator is initialized*/
+	{
+		index = search_in_solicited_floor_array(self, floor); /*gets the index of the floor in the solicited_floor array*/
+		self->solicited_floor[index].solicited = false; /*sets the floor as not solicited*/
 	}
 }
 

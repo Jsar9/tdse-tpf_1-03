@@ -50,7 +50,7 @@ extern "C" {
 
 /*ACÁ GERMÁN*/
 
-#define botonsitobueno 2315
+/*#define botonsitobueno 2315*/
 
 
 

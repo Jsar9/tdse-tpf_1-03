@@ -74,6 +74,11 @@ typedef enum task_elevator_ev {EV_SYS_BTN_FLOOR_PRESSED, EV_SYS_BTN_FLOOR_UNPRES
 typedef enum task_elevator_st {ST_SYS_IDLE, ST_SYS_OPEN_DOOR, ST_SYS_CLOSING_DOOR, ST_SYS_CLOSED_DOOR, ST_SYS_MOVING_UP,
 							ST_SYS_MOVING_DOWN, ST_SYS_OPENING_DOOR} task_elevator_st_t;
 
+typedef struct floor_s {
+	int id_floor;
+	bool solicited;
+} floor_t;
+
 typedef struct
 {
 	uint32_t			tick;
@@ -84,7 +89,9 @@ typedef struct
 	unsigned int 		max_people; /*stores the max qty of people admitted*/
 	unsigned int 		current_people; /*stores the current qty of people inside the elevator*/
 	int 				current_floor; /*Stores the current_floor value*/
-	int* 				solicited_floor; /*Its an array of qty_floor size*/
+	int					min_floor; /*stores the number of the lower floor*/
+	int 				initial_floor; /*stores the number of the initial floor*/
+	floor_t*			solicited_floor; /*Its an array of floor_t with size qty_floor*/
 } task_elevator_dta_t;
 
 /********************** external data declaration ****************************/

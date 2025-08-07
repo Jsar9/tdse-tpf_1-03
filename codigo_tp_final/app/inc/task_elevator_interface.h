@@ -52,6 +52,7 @@ extern "C" {
 
 /********************** typedef **********************************************/
 
+
 /********************** external data declaration ****************************/
 
 /********************** external functions declaration ***********************/
@@ -65,8 +66,8 @@ extern bool any_event_task_elevator(void);
 /*This function sets the current_floor to the given value*/
 
 void elevator_create_solicited_floor_array(task_elevator_dta_t* self);
-void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor, unsigned int qty_floor);
-void eliminate_floor (task_elevator_dta_t self, int floor, unsigned int qty_floor);
+void put_solicited_floor (task_elevator_dta_t* self, int solicited_floor);
+void eliminate_solicited_floor (task_elevator_dta_t self, int floor);
 
 
 /********************** End of CPP guard *************************************/

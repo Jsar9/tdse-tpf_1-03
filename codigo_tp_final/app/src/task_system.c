@@ -164,11 +164,11 @@ void task_system_update(void *parameters)
 		{
 			case ST_SYS_XX_IDLE:
 
-				if ((true == p_task_system_dta->flag) && (EV_SYS_FLOOR_00 == p_task_system_dta->event))
+				if ((EV_SYS_FLOOR_00 == p_task_system_dta->event))
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_00 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_00);
 									p_task_system_dta->tick = DEL_SYS_XX_MED;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
@@ -177,7 +177,7 @@ void task_system_update(void *parameters)
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_01 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_01);
 									p_task_system_dta->tick = DEL_SYS_XX_MED;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
@@ -186,10 +186,12 @@ void task_system_update(void *parameters)
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_02 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_02);
 									p_task_system_dta->tick = DEL_SYS_XX_MED;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
+
+
 			break;
 
 			case ST_SYS_XX_ACTIVE:
@@ -198,7 +200,7 @@ void task_system_update(void *parameters)
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_00 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_00);
 									p_task_system_dta->tick--;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
@@ -206,7 +208,7 @@ void task_system_update(void *parameters)
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_01 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_01);
 									p_task_system_dta->tick--;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
@@ -214,7 +216,7 @@ void task_system_update(void *parameters)
 								{
 									p_task_system_dta->flag = false;
 									put_event_task_elevator(EV_SYS_BTN_FLOOR_PRESSED);
-									put_solicited_floor(p_task_elevator_dta, FLOOR_02 ,p_task_elevator_dta->qty_floor);
+									put_solicited_floor(p_task_elevator_dta, FLOOR_02);
 									p_task_system_dta->tick--;
 									p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 								}
