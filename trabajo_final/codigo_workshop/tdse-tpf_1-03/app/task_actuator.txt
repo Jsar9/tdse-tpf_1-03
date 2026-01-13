@@ -1,0 +1,38 @@
+  task_actuator.c (task_actuator.h, task_actuator_attribute.h) 
+   Non-Blocking & Update By Time Code -> Actuator Modeling
+
+  task_actuator_interface.c (task_actuator_interface.h)
+   Non-Blocking Code
+
+...task_actuator_attribute.h:
+
+   typedef enum task_actuator_ev: eventos de las tarea del actuador
+
+   typedef enum task_actuator_st: estados de las tarea del actuador
+
+   task_actuator_cfg_t:
+    task_actuator_id_t	identifier:  id o identificador de tarea actuador
+	GPIO_TypeDef *		gpio_port: puerto GPIO 
+	uint16_t			pin:  tipo entero de  16bits
+	GPIO_PinState		led_on: Estado ON del PIN
+	GPIO_PinState		led_off: Estado OFF del PIN
+	uint32_t			tick_blink: Tiempo de parpadeo
+	uint32_t			tick_pulse: Tiempo de pulso activo
+
+   task_actuator_dta_t:
+    uint32_t			tick: Tiempo 
+	task_actuator_st_t	state: estado del actuador
+	task_actuator_ev_t	event: evento del actuador
+	bool				flag:  flag de estado logico
+	
+	
+   task_actuator.c:
+   void task_actuator_init(void *): inicializa el actuador
+   void task_actuator_update(void *):actualiza el estado actuador
+   
+   
+   
+   task_actuator_interface.h:
+   void put_event_task_actuator(task_actuator_ev_t , task_actuator_id_t):Introduce un evento en la Tarea del Actuador
+   
+   
