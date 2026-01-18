@@ -67,7 +67,10 @@ typedef enum task_system_ev {EV_SYS_XX_IDLE,
 
 /* State of Task System */
 typedef enum task_system_st {ST_SYS_XX_IDLE,
-							 ST_SYS_XX_ACTIVE} task_system_st_t;
+							 ST_SYS_XX_ACTIVE,
+							 ST_SYS_LOW_TEMP,
+							 ST_SYS_HIGH_TEMP,
+							 ST_SYS_CL_TEMP,} task_system_st_t;
 
 typedef struct
 {
