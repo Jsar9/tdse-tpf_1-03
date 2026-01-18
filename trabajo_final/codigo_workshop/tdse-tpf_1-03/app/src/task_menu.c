@@ -61,29 +61,63 @@
 
 /********************** internal data declaration ****************************/
 
+/*
+ *
+ * para facilidad de lectura
 typedef struct
 {
+	uint32_t		tick;
+	task_menu_st_t	state;
+	task_menu_ev_t	event;
+	bool			flag;
+	int 	id_mode;
 	int parameter;
-	bool power;
-	int speed;
-	bool spin;
-} motor_t;
+	float low_temp;
+	float high_temp;
+	float cl_temp;
 
-task_menu_dta_t task_menu_dta =
-	{DEL_MEN_XX_MIN, ST_MENU_1, EV_MEN_ENT_IDLE, false, 0, 1, false, 0, false};
+} task_menu_dta_t;
+
+*/
+
+
+//defines the initial temperatures used in setup_mode (VER - Es probable que sean definidas en system e importadas aqui)
+#define INITIAL_LOW_TEMP 25
+
+#define INITIAL_CL_TEMP 30
+
+#define INITIAL_HIGH_TEMP 35
+
+#define INITIAL_CURSOR_MODE 0
+
+#define INITIAL_CURSOR_PARAMETER 1
 
 #define MENU_DTA_QTY	(sizeof(task_menu_dta)/sizeof(task_menu_dta_t))
 
+#define QTY_PARAMETERS 3
+
+//defines the ID for each mode
+enum { ID_NORMAL_MODE, ID_SETUP_MODE };
+
+//defines the ID for each parameter from the System
+enum { ID_LOW_TEMP_PARAMETER, ID_HIGH_TEMP_PARAMETER, ID_CL_TEMP_PARAMETER };
+
+
+task_menu_dta_t task_menu_dta =
+	{DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, false, INITIAL_CURSOR_MODE, INITIAL_CURSOR_PARAMETER,INITIAL_LOW_TEMP, INITIAL_HIGH_TEMP, INITIAL_CL_TEMP};
+
+
+
+#define MIN_TEMP_VALUE 0
+
+#define MAX_TEMP_VALUE 120
+
+
+#define ID_LOW_TEMP_PARAMETER 0
+#define ID_HIGH_TEMP_PARAMETER 1
+#define ID_CL_TEMP_PARAMETER 2
+
 /********************** internal functions declaration ***********************/
-
-void init_motor (motor_t * motor){
-
-
-	motor -> parameter = 1;
-	motor -> power = false;
-	motor -> speed = 0;
-	motor -> spin = false;
-}
 
 /********************** internal data definition *****************************/
 const char *p_task_menu 		= "Task Menu (Interactive Menu)";
@@ -144,14 +178,6 @@ void task_menu_update(void *parameters)
 	task_menu_dta_t *p_task_menu_dta;
 	bool b_time_update_required = false;
 	char menu_str[8];
-	motor_t motors[QTY_MOTORS];
-
-
-	for(int i = 0 ; i< QTY_MOTORS ; i++)
-	{
-		init_motor(&motors[i]);
-	}
-
 
 	/* Update Task Menu Counter */
 	g_task_menu_cnt++;
@@ -204,141 +230,179 @@ void task_menu_update(void *parameters)
 
 			switch (p_task_menu_dta->state)
 			{
-				case ST_MENU_1:
+				case ST_MAIN_MENU:
 
 					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_motor < QTY_MOTORS)
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
 					{
-						p_task_menu_dta->id_motor ++;
+						p_task_menu_dta->id_mode++;
 					}
 
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_motor >= QTY_MOTORS)
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode >= QTY_MODES)
 					{
-						p_task_menu_dta->id_motor = 0;
+						p_task_menu_dta->id_mode = 0;
 					}
 
 					// actions - enter
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)
+					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
 					{
-						p_task_menu_dta->state = ST_MENU_2;
+						p_task_menu_dta->state = ST_NORMAL_MODE;
+						put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the normal mode system
+					}
+
+					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
+					{
+						p_task_menu_dta->state = ST_SETUP_MODE;
+
 					}
 
 					// actions - esc
 					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 					{
-						p_task_menu_dta->state = ST_MENU_1;
+						p_task_menu_dta->state = ST_MAIN_MENU;
 					}
 
 					break;
 
-				case ST_MENU_2:
-					//actions - enter
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter==1)
-					{
-						p_task_menu_dta->state = ST_POWER;
-					}
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter==2)
-					{
-						p_task_menu_dta->state = ST_SPEED;
-					}
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter==3)
-					{
-						p_task_menu_dta->state = ST_SPIN;
-					}
-
-					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter<3)
-					{
-						p_task_menu_dta->state = ST_MENU_2;
-						p_task_menu_dta->parameter ++ ;
-					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter == 3)
-					{
-						p_task_menu_dta->state = ST_MENU_2;
-						p_task_menu_dta->parameter =1 ;
-					}
+				case ST_NORMAL_MODE:
 
 					// actions - esc
 					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 					{
-						p_task_menu_dta->state = ST_MENU_1;
+						p_task_menu_dta->state = ST_MAIN_MENU;
+						put_event_task_system(EV_SYS_XX_IDLE);  //turns off the normal mode system
 					}
+
 
 					break;
 
-				case ST_POWER:
+				case ST_SETUP_MODE:
+
+
 					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->power  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter < QTY_PARAMETERS)
 					{
-						p_task_menu_dta->power = false ;
+						p_task_menu_dta->parameter++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  !p_task_menu_dta->power  )
+
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter >= QTY_PARAMETERS )
 					{
-						p_task_menu_dta->power = true ;
+						p_task_menu_dta->parameter = 0 ;
 					}
+
+
+					// actions - enter
+					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_LOW_TEMP_PARAMETER)
+					{
+						p_task_menu_dta->state = ST_LOW_TEMP;
+					}
+
+					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_HIGH_TEMP_PARAMETER)
+					{
+						p_task_menu_dta->state = ST_HIGH_TEMP;
+					}
+
+					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_CL_TEMP_PARAMETER)
+					{
+						p_task_menu_dta->state = ST_CL_TEMP;
+					}
+
 
 					// actions - esc
 					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
 					{
-						p_task_menu_dta->state = ST_MENU_2;
-					}
-
-					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
-					{
-						motors[p_task_menu_dta->id_motor].power = p_task_menu_dta->power;
+						p_task_menu_dta->state = ST_MAIN_MENU;
 					}
 
 					break;
 
-				case ST_SPEED :
+				case ST_LOW_TEMP :
 
-					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->speed < 9  )
+					// actions - next (suma)
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
 					{
-						p_task_menu_dta->speed ++ ;
+						p_task_menu_dta->low_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->speed >= 9 )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
 					{
-						p_task_menu_dta->speed = 0 ;
+						p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
 					}
 
-					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
+					// actions - esc (resta)
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
 					{
-						p_task_menu_dta->state = ST_MENU_2;
+						p_task_menu_dta->low_temp --;
 					}
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
+					{
+						p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
+					}
+
 
 					// actions - enter
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
-						motors[p_task_menu_dta->id_motor].speed = p_task_menu_dta->speed;
+						/*(guardar en memoria el valor low_temp) + Se debe comprobar que sea menor que el de high_temp*/
 					}
 
 					break;
 
-				case ST_SPIN :
+				case ST_HIGH_TEMP :
+					// actions - next (suma)
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
+					{
+						p_task_menu_dta->high_temp ++ ;
+					}
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
+					{
+						p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
+					}
 
-					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->spin  )
+					// actions - esc (resta)
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
 					{
-						p_task_menu_dta->spin = false ;
+						p_task_menu_dta->high_temp --;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  !p_task_menu_dta->spin )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
 					{
-						p_task_menu_dta->spin = true ;
+						p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
 					}
 
-					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
-					{
-						p_task_menu_dta->state = ST_MENU_2;
-					}
 
 					// actions - enter
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
-						motors[p_task_menu_dta->id_motor].spin = p_task_menu_dta->spin;
+						/*(guardar en memoria el valor high_temp) y chequear que sea mayor que CL y LOW*/
+					}
+
+					break;
+
+				case ST_CL_TEMP :
+					// actions - next (suma)
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
+					{
+						p_task_menu_dta->cl_temp ++ ;
+					}
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
+					{
+						p_task_menu_dta->cl_temp = MIN_TEMP_VALUE ;
+					}
+
+					// actions - esc (resta)
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
+					{
+						p_task_menu_dta->cl_temp --;
+					}
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
+					{
+						p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
+					}
+
+
+					// actions - enter
+					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
+					{
+						/*(guardar en memoria el valor cl_temp) y chequear que sea mayor que LOW y menor que HIGH*/
 					}
 
 					break;

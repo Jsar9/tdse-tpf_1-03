@@ -29,14 +29,14 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_menu_attribute.h
+ * @file   : task_adc.h
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
  */
 
-#ifndef TASK_INC_TASK_MENU_ATTRIBUTE_H_
-#define TASK_INC_TASK_MENU_ATTRIBUTE_H_
+#ifndef TASK_INC_TASK_ADC_H_
+#define TASK_INC_TASK_ADC_H_
 
 /********************** CPP guard ********************************************/
 #ifdef __cplusplus
@@ -48,57 +48,19 @@ extern "C" {
 /********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
-/* Menu Statechart - State Transition Table */
-/* 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
- * 	| Current               | Event                 |                       | Next                  |                       |
- * 	| State                 | (Parameters)          | [Guard]               | State                 | Actions               |
- * 	|=======================+=======================+=======================+=======================+=======================|
- * 	| ST_MEN_XX_IDLE        | EV_MEN_MEN_ACTIVE     |                       | ST_MEN_XX_ACTIVE      |                       |
- * 	|                       |                       |                       |                       |                       |
- * 	|-----------------------+-----------------------+-----------------------+-----------------------+-----------------------|
- * 	| ST_MEN_XX_ACTIVE      | EV_MEN_MEN_IDLE       |                       | ST_MEN_XX_IDLE        |                       |
- * 	|                       |                       |                       |                       |                       |
- * 	------------------------+-----------------------+-----------------------+-----------------------+------------------------
- */
-
-/* Events to excite Task Menu */
-typedef enum task_menu_ev {EV_MEN_ENT_IDLE,
-						   EV_MEN_ENT_ACTIVE,
-						   EV_MEN_NEX_IDLE,
-						   EV_MEN_NEX_ACTIVE,
-						   EV_MEN_ESC_IDLE,
-						   EV_MEN_ESC_ACTIVE} task_menu_ev_t;
-
-/* State of Task Menu */
-typedef enum task_menu_st {ST_MAIN_MENU,
-	ST_NORMAL_MODE, ST_SETUP_MODE, ST_LOW_TEMP, ST_HIGH_TEMP, ST_CL_TEMP} task_menu_st_t;
-
-#define QTY_MODES 2
-
-typedef struct
-{
-	uint32_t		tick;
-	task_menu_st_t	state;
-	task_menu_ev_t	event;
-	bool			flag;
-	int 	id_menu;
-	int parameter;
-	float low_temp;
-	float high_temp;
-	float cl_temp;
-
-} task_menu_dta_t;
 
 /********************** external data declaration ****************************/
-extern task_menu_dta_t task_menu_dta;
+extern uint32_t g_task_a_cnt;
 
 /********************** external functions declaration ***********************/
+void task_adc_init(void *parameters);
+void task_adc_update(void *parameters);
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TASK_INC_TASK_MENU_ATTRIBUTE_H_ */
+#endif /* TASK_INC_TASK_ADC_H_ */
 
 /********************** end of file ******************************************/
