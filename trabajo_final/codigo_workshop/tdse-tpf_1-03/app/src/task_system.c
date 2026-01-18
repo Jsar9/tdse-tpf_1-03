@@ -159,7 +159,7 @@ void task_system_update(void *parameters)
 				if ( (!p_task_system_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_system_dta->event) )
 				{
 					p_task_system_dta->flag = true;
-					p_task_system_dta->state = ST_SYS_LOW_TEMP;
+					p_task_system_dta->state = ST_SYS_LOW_TEMP; /*comienza por defecto en low temp*/
 				}
 
 				break;
@@ -169,10 +169,13 @@ void task_system_update(void *parameters)
 				if ((p_task_system_dta->flag) && (EV_SYS_XX_IDLE == p_task_system_dta->event))
 				{
 					p_task_system_dta->flag = false;
-					p_task_system_dta->state = ST_SYS_XX_IDLE;
+					p_task_system_dta->state = ST_SYS_XX_IDLE; /*se deben apagar las luces, etc*/
 				}
 
 				break;
+
+			case ST_SYS_LOW_TEMP:
+				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
 
 			default:
 				p_task_system_dta->state = ST_SYS_XX_IDLE;
