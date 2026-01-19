@@ -56,6 +56,7 @@ extern void init_queue_event_task_system(void);
 extern void put_event_task_system(task_system_ev_t event);
 extern task_system_ev_t get_event_task_system(void);
 extern bool any_event_task_system(void);
+/*extern void put_temperature_system(float temp); */
 
 /********************** End of CPP guard *************************************/
 #ifdef __cplusplus

@@ -61,10 +61,38 @@
 #define DEL_SYS_XX_MAX				500ul
 
 /********************** internal data declaration ****************************/
-task_system_dta_t task_system_dta =
-	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false};
+
+/*
+ *
+ * PARA FACILIDAD DE LECTURA
+ * typedef struct
+{
+	uint32_t			tick;
+	task_system_st_t	state;
+	task_system_ev_t	event;
+	bool				flag;
+	float				temp;
+	float				low_temp;
+	float				high_temp;
+	float				cl_temp;
+} task_system_dta_t;
+ *
+ *
+ * */
+
+
+
+
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
+
+#define INIT_SYS_LOW_TEMP 25
+#define INIT_SYS_HIGH_TEMP 35
+#define INIT_SYS_CL_TEMP 30
+
+/*Stores the variables of the system*/
+task_system_dta_t task_system_dta =
+	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false, };
 
 /********************** internal functions declaration ***********************/
 

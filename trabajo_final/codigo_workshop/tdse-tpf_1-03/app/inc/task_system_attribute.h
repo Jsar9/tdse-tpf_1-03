@@ -78,6 +78,10 @@ typedef struct
 	task_system_st_t	state;
 	task_system_ev_t	event;
 	bool				flag;
+	float				temp;
+	float				low_temp;
+	float				high_temp;
+	float				cl_temp;
 } task_system_dta_t;
 
 /********************** external data declaration ****************************/
