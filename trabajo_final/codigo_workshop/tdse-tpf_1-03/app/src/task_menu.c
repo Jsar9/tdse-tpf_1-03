@@ -119,6 +119,9 @@ const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
 uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
 
+/*temperature_dta will be modified by the interactive menu*/
+extern temperature_t temperature_dta;
+
 /********************** external functions definition ************************/
 void task_menu_init(void *parameters)
 {
@@ -170,6 +173,9 @@ void task_menu_update(void *parameters)
 	task_menu_dta_t *p_task_menu_dta;
 	bool b_time_update_required = false;
 	char menu_str[8];
+
+	//temp pointer
+	temperature_t* p_temperature_dta = &temperature_dta;
 
 	/* Update Task Menu Counter */
 	g_task_menu_cnt++;

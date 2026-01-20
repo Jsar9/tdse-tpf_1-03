@@ -86,13 +86,13 @@ typedef struct
 	float			high_temp;
 	float			cl_temp;
 	float			temp;	//current temperature
-} temperatures_t;
+} temperature_t;
 
 
 
 /********************** internal data declaration ****************************/
 
-temperatures_t temperatures_dta = {
+temperature_t temperature_dta = {
 		INITIAL_LOW_TEMP, INITIAL_HIGH_TEMP, INITIAL_CL_TEMP, INITIAL_TEMP
 };
 
@@ -102,7 +102,7 @@ const task_cfg_t task_cfg_list[]	= {
 		{task_menu_init,	task_menu_update, 		NULL},
 		{task_adc_init, task_adc_update, NULL},
 		{task_actuator_init, task_actuator_update, NULL},
-		{task_system_init, task_system_update, &temperatures_dta},
+		{task_system_init, task_system_update, &temperature_dta}
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))
