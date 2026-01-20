@@ -271,6 +271,12 @@ void task_menu_update(void *parameters)
 						put_event_task_system(EV_SYS_XX_IDLE);  //turns off the normal mode system
 					}
 
+					if((EV_MEN_ESC_IDLE == p_task_menu_dta->event) || (EV_MEN_ENT_IDLE == p_task_menu_dta->event) || (EV_MEN_NEX_IDLE == p_task_menu_dta->event))
+					{
+						// SI NO SE PRESIONÓ NINGÚN BOTÓN:
+						//se debe imprimir por display la temperatura leída del ADC (ya configurado, los shared data son los temperature_dta)p_temperature_dta->temp;
+					}
+
 
 					break;
 
@@ -341,6 +347,8 @@ void task_menu_update(void *parameters)
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
 						/*(guardar en memoria el valor low_temp) + Se debe comprobar que sea menor que el de high_temp*/
+
+						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> low_temp*/
 					}
 
 					break;
@@ -371,6 +379,8 @@ void task_menu_update(void *parameters)
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
 						/*(guardar en memoria el valor high_temp) y chequear que sea mayor que CL y LOW*/
+
+						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> high_temp*/
 					}
 
 					break;
@@ -401,6 +411,7 @@ void task_menu_update(void *parameters)
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
 						/*(guardar en memoria el valor cl_temp) y chequear que sea mayor que LOW y menor que HIGH*/
+						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> cl_temp*/
 					}
 
 					break;

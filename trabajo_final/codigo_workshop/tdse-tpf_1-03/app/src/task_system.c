@@ -213,14 +213,16 @@ void task_system_update(void *parameters)
 
 
 				/*transition cases*/
-				if((p_task_system_dta->flag) && (parameters->temp > parameters->low_temp) && (parameters->temp < parameters->high_temp))
+				if((p_task_system_dta->flag) && (p_temperature_dta->temp > p_temperature_dta->low_temp) && (p_temperature_dta->temp < p_temperature_dta->high_temp))
 				{
 					p_task_system_dta -> state = ST_SYS_MID_TEMP;
 				}
 
-			default:
-				p_task_system_dta->state = ST_SYS_XX_IDLE;
 
+
+			default:
+
+				p_task_system_dta->state = ST_SYS_XX_IDLE;
 
 				break;
 		}
