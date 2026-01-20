@@ -80,14 +80,6 @@ typedef struct
 
 */
 
-
-//defines the initial temperatures used in setup_mode (VER - Es probable que sean definidas en system e importadas aqui)
-#define INITIAL_LOW_TEMP 25
-
-#define INITIAL_CL_TEMP 30
-
-#define INITIAL_HIGH_TEMP 35
-
 #define INITIAL_CURSOR_MODE 0
 
 #define INITIAL_CURSOR_PARAMETER 1

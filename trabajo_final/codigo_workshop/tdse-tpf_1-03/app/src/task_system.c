@@ -92,7 +92,7 @@
 
 /*Stores the variables of the system*/
 task_system_dta_t task_system_dta =
-	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false, };
+	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false};
 
 /********************** internal functions declaration ***********************/
 

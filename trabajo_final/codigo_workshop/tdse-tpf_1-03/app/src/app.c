@@ -55,6 +55,18 @@
 #define TASK_X_WCET_INI		0ul
 #define TASK_X_DELAY_MIN	0ul
 
+#define INITIAL_LOW_TEMP 25
+
+#define INITIAL_CL_TEMP 30
+
+#define INITIAL_HIGH_TEMP 35
+
+#define INITIAL_TEMP 10
+
+
+
+
+
 typedef struct {
 	void (*task_init)(void *);		// Pointer to task (must be a
 									// 'void (void *)' function)
@@ -67,13 +79,30 @@ typedef struct {
     uint32_t WCET;				// Worst-case execution time (microseconds)
 } task_dta_t;
 
+
+typedef struct
+{
+	float			low_temp;
+	float			high_temp;
+	float			cl_temp;
+	float			temp;	//current temperature
+} temperatures_t;
+
+
+
 /********************** internal data declaration ****************************/
+
+temperatures_t temperatures_dta = {
+		INITIAL_LOW_TEMP, INITIAL_HIGH_TEMP, INITIAL_CL_TEMP, INITIAL_TEMP
+};
+
+
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
 		{task_menu_init,	task_menu_update, 		NULL},
 		{task_adc_init, task_adc_update, NULL},
 		{task_actuator_init, task_actuator_update, NULL},
-		{task_system_init, task_system_update, NULL},
+		{task_system_init, task_system_update, &temperatures_dta},
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))
@@ -85,6 +114,8 @@ const char *p_sys	= " Bare Metal - Event-Triggered Systems (ETS)\r\n";
 const char *p_app	= " App - Interactive Menu\r\n";
 
 /********************** external data declaration ****************************/
+extern temperatures_t temperatures_dta;
+
 uint32_t g_app_cnt;
 uint32_t g_app_time_us;
 
