@@ -80,13 +80,7 @@ typedef struct {
 } task_dta_t;
 
 
-typedef struct
-{
-	float			low_temp;
-	float			high_temp;
-	float			cl_temp;
-	float			temp;	//current temperature
-} temperature_t;
+
 
 
 
@@ -99,10 +93,14 @@ temperature_t temperature_dta = {
 
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
-		{task_menu_init,	task_menu_update, 		NULL},
-		{task_adc_init, task_adc_update, NULL},
-		{task_actuator_init, task_actuator_update, NULL},
-		{task_system_init, task_system_update, &temperature_dta}
+
+		{task_actuator_init, task_actuator_update,	NULL},
+
+		{task_adc_init, task_adc_update,			&temperature_dta},
+
+		{task_menu_init, task_menu_update, 			&temperature_dta},
+
+		{task_system_init, task_system_update,		&temperature_dta}
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))
@@ -191,6 +189,8 @@ void app_update(void)
 				task_dta_list[index].WCET = cycle_counter_time_us;
 			}
 	    }
+
+		LOGGER_LOG("%f\n", temperature_dta.temp);
     }
 }
 

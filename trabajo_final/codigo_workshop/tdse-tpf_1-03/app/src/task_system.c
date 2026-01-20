@@ -144,6 +144,9 @@ void task_system_update(void *parameters)
 	task_system_dta_t *p_task_system_dta;
 	bool b_time_update_required = false;
 
+	//Initialize the pointer to temperature_dta
+	temperature_t* p_temperature_dta = (temperature_t* )parameters;
+
 	/* Update Task System Counter */
 	g_task_system_cnt++;
 
@@ -204,6 +207,16 @@ void task_system_update(void *parameters)
 
 			case ST_SYS_LOW_TEMP:
 				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
+				{
+
+				}
+
+
+				/*transition cases*/
+				if((p_task_system_dta->flag) && (parameters->temp > parameters->low_temp) && (parameters->temp < parameters->high_temp))
+				{
+					p_task_system_dta -> state = ST_SYS_MID_TEMP;
+				}
 
 			default:
 				p_task_system_dta->state = ST_SYS_XX_IDLE;

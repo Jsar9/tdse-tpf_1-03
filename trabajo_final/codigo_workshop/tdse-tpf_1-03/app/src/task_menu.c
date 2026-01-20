@@ -174,8 +174,8 @@ void task_menu_update(void *parameters)
 	bool b_time_update_required = false;
 	char menu_str[8];
 
-	//temp pointer
-	temperature_t* p_temperature_dta = &temperature_dta;
+	//Initialize the pointer to temperature_dta
+	temperature_t* p_temperature_dta = (temperature_t* )parameters;
 
 	/* Update Task Menu Counter */
 	g_task_menu_cnt++;

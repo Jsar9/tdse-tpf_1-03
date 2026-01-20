@@ -54,6 +54,15 @@ extern "C" {
 
 /********************** typedef **********************************************/
 
+typedef struct
+{
+	bool			adc_end_of_conversion;
+	float			low_temp;
+	float			high_temp;
+	float			cl_temp;
+	float			temp;	//current temperature
+} temperature_t;
+
 /********************** external data declaration ****************************/
 extern uint32_t g_app_cnt;
 extern uint32_t g_app_time_us;
