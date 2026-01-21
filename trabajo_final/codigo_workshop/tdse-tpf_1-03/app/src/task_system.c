@@ -144,7 +144,7 @@ void task_system_update(void *parameters)
 	bool b_time_update_required = false;
 
 	//Initialize the pointer to temperature_dta
-	temperature_t* p_temperature_dta = (temperature_t* )parameters;
+	shared_temperature_t* p_shared_temperature_dta = (shared_temperature_t* )parameters;
 
 	/* Update Task System Counter */
 	g_task_system_cnt++;
@@ -200,6 +200,34 @@ void task_system_update(void *parameters)
 				{
 					p_task_system_dta->flag = false;
 					p_task_system_dta->state = ST_SYS_XX_IDLE; /*se deben apagar las luces, etc*/
+				}
+
+
+
+
+
+				// update the configuration data from memory flash when it's needed
+
+
+				if ((shared_temperature_dta-> must_read_low_temp == true))
+				{
+					// leer datos de flash y copiar en shared_temperature_dta-> low_temp;
+
+					shared_temperature_dta -> must_read_low_temp = false; // reset the flag
+				}
+
+				if ((shared_temperature_dta-> must_read_high_temp == true))
+				{
+					// leer datos de flash y copiar en shared_temperature_dta-> high_temp;
+
+					shared_temperature_dta -> must_read_high_temp = false; // reset the flag
+				}
+
+				if ((shared_temperature_dta-> must_read_cl_temp == true))
+				{
+					// leer datos de flash y copiar en shared_temperature_dta-> cl_temp;
+
+					shared_temperature_dta -> must_read_cl_temp = false; // reset the flag
 				}
 
 				break;

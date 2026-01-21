@@ -52,7 +52,7 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
-
+#define INITIAL_TEMPERATURE_VALUE 15
 
 # define INITIAL_CONFIG_LOW_TEMP 10
 # define INITIAL_CONFIG_HIGH_TEMP 30
@@ -63,9 +63,11 @@ extern "C" {
 typedef struct
 {
 	bool			adc_end_of_conversion;
-	float			temp;	//current temperature
+	float			temp;	//current temperature from adc
 
-	bool must_read; //its used for check if data is updated from memory flash
+	bool must_read_low_temp; //its used for check if data is updated from memory flash
+	bool must_read_high_temp;
+	bool must_read_cl_temp;
 	float low_temp;
 	float high_temp;
 	float cl_temp;

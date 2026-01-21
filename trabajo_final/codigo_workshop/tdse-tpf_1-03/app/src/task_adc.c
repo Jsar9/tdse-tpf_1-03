@@ -79,7 +79,7 @@ void task_adc_update(void *parameters)
 
 	shared_temperature_t * p_shared_temperature_dta = (shared_temperature_t *) parameters;
 
-	if (HAL_OK==ADC_Poll_Read(&p_temperature_dta->temp)) {
+	if (HAL_OK==ADC_Poll_Read(&p_temperature_dta->temp)) { //polling read
 		p_shared_temperature_dta->adc_end_of_conversion = true;
 	}
 	else {

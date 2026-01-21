@@ -210,13 +210,13 @@ void task_menu_update(void *parameters)
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
 					{
 						p_task_menu_dta->state = ST_NORMAL_MODE;
-						put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the normal mode system
+						put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the system during normal mode
 					}
 
 					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
 					{
 						p_task_menu_dta->state = ST_SETUP_MODE;
-
+						put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
 					}
 
 					// actions - esc
@@ -233,7 +233,7 @@ void task_menu_update(void *parameters)
 					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 					{
 						p_task_menu_dta->state = ST_MAIN_MENU;
-						put_event_task_system(EV_SYS_XX_IDLE);  //turns off the normal mode system
+						put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system
 					}
 
 					if((EV_MEN_ESC_IDLE == p_task_menu_dta->event) || (EV_MEN_ENT_IDLE == p_task_menu_dta->event) || (EV_MEN_NEX_IDLE == p_task_menu_dta->event))
@@ -288,21 +288,21 @@ void task_menu_update(void *parameters)
 				case ST_LOW_TEMP :
 
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
 					}
@@ -311,62 +311,78 @@ void task_menu_update(void *parameters)
 					// actions - enter
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
+
+
 						/*(guardar en memoria el valor low_temp) + Se debe comprobar que sea menor que el de high_temp*/
 
+
 						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> low_temp*/
+
+						// indicates that the configuration temperatures must be read from flash memory
+						if (p_shared_temperature_dta->must_read_low_temp == false)
+						{
+							p_shared_temperature_dta->must_read_low_temp = true;
+						}
+
 					}
 
 					break;
 
 				case ST_HIGH_TEMP :
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
 					}
 
 
 					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
+					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)
 					{
 						/*(guardar en memoria el valor high_temp) y chequear que sea mayor que CL y LOW*/
 
 						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> high_temp*/
+
+						// indicates that the configuration temperatures must be read from flash memory
+						if (p_shared_temperature_dta->must_read_high_temp == false)
+							{
+								p_shared_temperature_dta->must_read_high_temp = true;
+							}
 					}
 
 					break;
 
 				case ST_CL_TEMP :
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->cl_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
 					}
@@ -377,6 +393,12 @@ void task_menu_update(void *parameters)
 					{
 						/*(guardar en memoria el valor cl_temp) y chequear que sea mayor que LOW y menor que HIGH*/
 						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> cl_temp*/
+
+						if (p_shared_temperature_dta->must_read_cl_temp == false)
+						{
+							p_shared_temperature_dta->must_read_cl_temp = true;
+						}
+
 					}
 
 					break;

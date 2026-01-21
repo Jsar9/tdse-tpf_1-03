@@ -1,22 +1,16 @@
 #ifndef FLASH_STORE_H
 #define FLASH_STORE_H
 
-#include <stdint.h>
+#include "stm32f1xx_hal.h" //library for hal functions
 
-// Definimos la estructura AQUÍ para que sea visible por quien incluya la librería
-typedef struct {
-    uint32_t magic_number; // Para validar si hay datos
-    uint32_t id_dispositivo;
-    float umbral_temperatura;
-    uint8_t opciones_flag;
-    // ... más variables ...
-} __attribute__((aligned(4))) AppConfig_t;
+#define FLASH_BASE_ADDRESS      0x08000000	// the initial flash address. First page address:  0X0800 0000 - 0x0800 03FF
+#define FLASH_PAGE_SIZE         1024  		// the size of one page in STM32F103RB board (1 KB)( obtained from user manual - medium density devices)
+#define FLASH_TOTAL_PAGES       128   		// the amount of pages in STM32F103RB board (from user manual) (from 0 to 127)
 
-// Variable global externa (para que main.c pueda leerla directametne)
-extern AppConfig_t SystemConfig;
+//typedef
+typedef float flash_data_t; // the data type to store in flash memory
 
-// Funciones PÚBLICAS (API)
-void FlashStore_Init(void);   // Carga datos al arrancar
-void FlashStore_Save(void);   // Guarda los datos actuales de RAM a Flash
+
+#define PAGE_MAX_CODE_SIZE 64
 
 #endif // FLASH_STORE_H

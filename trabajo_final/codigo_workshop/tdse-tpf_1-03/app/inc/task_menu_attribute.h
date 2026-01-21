@@ -107,9 +107,9 @@ typedef struct
 	bool			flag;
 	int 	id_menu;
 	int parameter;
-	float menu_low_temp;
-	float menu_high_temp;
-	float menu_cl_temp;
+	float low_temp;
+	float high_temp;
+	float cl_temp;
 } task_menu_dta_t;
 
 /********************** external data declaration ****************************/

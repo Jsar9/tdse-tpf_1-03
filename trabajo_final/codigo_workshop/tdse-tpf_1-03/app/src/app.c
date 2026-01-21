@@ -79,7 +79,9 @@ typedef struct {
 	bool			adc_end_of_conversion;
 	float			temp;	//current temperature
 
-	bool must_read; //its used for check if data is updated from memory flash
+	bool must_read_low_temp; //its used for check if data is updated from memory flash
+	bool must_read_high_temp;
+	bool must_read_cl_temp;
 	float low_temp;
 	float high_temp;
 	float cl_temp;
@@ -89,11 +91,11 @@ typedef struct {
  */
 
 
-
-
 shared_temperature_t shared_temperature_dta = {
 	true,
-	0,
+	INITIAL_TEMPERATURE_VALUE,
+	false, //no need a previous configuration from the setup mode to initialize the app
+	false,
 	false,
 	INITIAL_CONFIG_LOW_TEMP,
 	INITIAL_CONFIG_HIGH_TEMP,
@@ -123,7 +125,6 @@ const char *p_sys	= " Bare Metal - Event-Triggered Systems (ETS)\r\n";
 const char *p_app	= " App - Interactive Menu\r\n";
 
 /********************** external data declaration ****************************/
-extern temperatures_t temperatures_dta;
 
 uint32_t g_app_cnt;
 uint32_t g_app_time_us;
@@ -201,7 +202,7 @@ void app_update(void)
 			}
 	    }
 
-		LOGGER_LOG("%f\n", temperature_dta.temp);
+		LOGGER_LOG("%f \n", shared_temperature_dta.temp); //to check if the data is ok
     }
 }
 
