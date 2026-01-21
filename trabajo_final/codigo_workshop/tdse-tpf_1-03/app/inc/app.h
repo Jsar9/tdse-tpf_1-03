@@ -52,13 +52,25 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
+
+
+# define INITIAL_CONFIG_LOW_TEMP 10
+# define INITIAL_CONFIG_HIGH_TEMP 30
+# define INITIAL_CONFIG_CL_TEMP 20
+
 /********************** typedef **********************************************/
 
 typedef struct
 {
 	bool			adc_end_of_conversion;
 	float			temp;	//current temperature
+
+	bool must_read; //its used for check if data is updated from memory flash
+	float low_temp;
+	float high_temp;
+	float cl_temp;
 } shared_temperature_t;
+
 
 /********************** external data declaration ****************************/
 extern uint32_t g_app_cnt;

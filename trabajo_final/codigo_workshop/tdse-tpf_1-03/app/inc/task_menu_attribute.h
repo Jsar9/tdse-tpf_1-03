@@ -70,8 +70,12 @@ typedef enum task_menu_ev {EV_MEN_ENT_IDLE,
 						   EV_MEN_ESC_ACTIVE} task_menu_ev_t;
 
 /* State of Task Menu */
-typedef enum task_menu_st {ST_MAIN_MENU,
-	ST_NORMAL_MODE, ST_SETUP_MODE, ST_LOW_TEMP, ST_HIGH_TEMP, ST_CL_TEMP} task_menu_st_t;
+typedef enum task_menu_st {	ST_MAIN_MENU,
+							ST_NORMAL_MODE,
+							ST_SETUP_MODE,
+							ST_LOW_TEMP,
+							ST_HIGH_TEMP,
+							ST_CL_TEMP} task_menu_st_t;
 
 #define QTY_MODES 2
 

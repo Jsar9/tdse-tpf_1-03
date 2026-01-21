@@ -66,7 +66,15 @@
 
 /* Initializes the menu data*/
 task_menu_dta_t task_menu_dta =
-	{DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, false, INITIAL_ID_MENU, INITIAL_PARAMETER, INITIAL_MENU_LOW_TEMP, INITIAL_MENU_HIGH_TEMP, INITIAL_MENU_CL_TEMP};
+	{		DEL_MEN_XX_MIN,
+			ST_MAIN_MENU,
+			EV_MEN_ENT_IDLE,
+			false,
+			INITIAL_ID_MENU,
+			INITIAL_PARAMETER,
+			INITIAL_MENU_LOW_TEMP,
+			INITIAL_MENU_HIGH_TEMP,
+			INITIAL_MENU_CL_TEMP};
 
 
 /********************** internal functions declaration ***********************/

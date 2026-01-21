@@ -72,7 +72,35 @@ typedef struct {
 
 /********************** internal data declaration ****************************/
 
-shared_temperature_t shared_temperature_dta;
+/**
+ *
+ * typedef struct
+{
+	bool			adc_end_of_conversion;
+	float			temp;	//current temperature
+
+	bool must_read; //its used for check if data is updated from memory flash
+	float low_temp;
+	float high_temp;
+	float cl_temp;
+} shared_temperature_t;
+ *
+ *
+ */
+
+
+
+
+shared_temperature_t shared_temperature_dta = {
+	true,
+	0,
+	false,
+	INITIAL_CONFIG_LOW_TEMP,
+	INITIAL_CONFIG_HIGH_TEMP,
+	INITIAL_CONFIG_CL_TEMP
+};
+
+
 
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
