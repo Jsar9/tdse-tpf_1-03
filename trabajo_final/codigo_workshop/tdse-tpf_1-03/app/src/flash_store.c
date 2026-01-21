@@ -119,9 +119,6 @@ void flash_write (uint8_t page, uint16_t index, void *data) {
 
 
 /* CORREGIIIIRRRR
- * Reads data from flash and copies it to the destination pointer provided in RAM.
- * * page, index: same logic as write.
- * *data_out: pointer to where you want to store the read value (e.g., &my_float_variable)
  */
 void flash_read (uint8_t page, uint16_t index, void *data_out) {
 
