@@ -75,6 +75,26 @@ typedef enum task_menu_st {ST_MAIN_MENU,
 
 #define QTY_MODES 2
 
+#define QTY_PARAMETERS 3
+
+#define INITIAL_MENU_LOW_TEMP 10
+#define INITIAL_MENU_HIGH_TEMP 30
+#define INITIAL_MENU_CL_TEMP 20
+
+#define INITIAL_ID_MENU 0 //First menu
+
+#define INITIAL_PARAMETER 1 //high_temp field
+
+#define MIN_TEMP_VALUE 0
+
+#define MAX_TEMP_VALUE 120
+
+//defines the ID for each mode
+enum { ID_NORMAL_MODE, ID_SETUP_MODE };
+
+//defines the ID for each parameter from the System
+enum { ID_LOW_TEMP_PARAMETER, ID_HIGH_TEMP_PARAMETER, ID_CL_TEMP_PARAMETER };
+
 typedef struct
 {
 	uint32_t		tick;
@@ -83,6 +103,9 @@ typedef struct
 	bool			flag;
 	int 	id_menu;
 	int parameter;
+	float menu_low_temp;
+	float menu_high_temp;
+	float menu_cl_temp;
 } task_menu_dta_t;
 
 /********************** external data declaration ****************************/

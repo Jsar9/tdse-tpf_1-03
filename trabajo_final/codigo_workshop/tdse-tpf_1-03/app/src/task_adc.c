@@ -66,21 +66,21 @@ extern ADC_HandleTypeDef hadc1;
 /********************** external functions definition ************************/
 void task_adc_init(void *parameters)
 {
-	temperature_t *p_temperature_dta = (temperature_t *) parameters;
+	shared_temperature_t *p_shared_temperature_dta = (shared_temperature_t *) parameters;
 
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_adc_init), p_task_adc);
 
-	p_temperature_dta->adc_end_of_conversion = false;
+	p_shared_temperature_dta->adc_end_of_conversion = false;
 }
 
 void task_adc_update(void *parameters)
 {
 
-	temperature_t * p_temperature_dta = (temperature_t *) parameters;
+	shared_temperature_t * p_shared_temperature_dta = (shared_temperature_t *) parameters;
 
 	if (HAL_OK==ADC_Poll_Read(&p_temperature_dta->temp)) {
-		p_temperature_dta->adc_end_of_conversion = true;
+		p_shared_temperature_dta->adc_end_of_conversion = true;
 	}
 	else {
 		LOGGER_LOG("error\n");

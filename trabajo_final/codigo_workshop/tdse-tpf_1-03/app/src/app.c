@@ -55,17 +55,6 @@
 #define TASK_X_WCET_INI		0ul
 #define TASK_X_DELAY_MIN	0ul
 
-#define INITIAL_LOW_TEMP 25
-
-#define INITIAL_CL_TEMP 30
-
-#define INITIAL_HIGH_TEMP 35
-
-#define INITIAL_TEMP 10
-
-
-
-
 
 typedef struct {
 	void (*task_init)(void *);		// Pointer to task (must be a
@@ -81,26 +70,20 @@ typedef struct {
 
 
 
-
-
-
 /********************** internal data declaration ****************************/
 
-temperature_t temperature_dta = {
-		INITIAL_LOW_TEMP, INITIAL_HIGH_TEMP, INITIAL_CL_TEMP, INITIAL_TEMP
-};
-
+shared_temperature_t shared_temperature_dta;
 
 const task_cfg_t task_cfg_list[]	= {
 		{task_sensor_init,	task_sensor_update, 	NULL},
 
 		{task_actuator_init, task_actuator_update,	NULL},
 
-		{task_adc_init, task_adc_update,			&temperature_dta},
+		{task_adc_init, task_adc_update,			&shared_temperature_dta},
 
-		{task_menu_init, task_menu_update, 			&temperature_dta},
+		{task_menu_init, task_menu_update, 			&shared_temperature_dta},
 
-		{task_system_init, task_system_update,		&temperature_dta}
+		{task_system_init, task_system_update,		&shared_temperature_dta}
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))

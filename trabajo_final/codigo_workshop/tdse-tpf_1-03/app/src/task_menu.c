@@ -61,53 +61,13 @@
 
 /********************** internal data declaration ****************************/
 
-/*
- *
- * para facilidad de lectura
-typedef struct
-{
-	uint32_t		tick;
-	task_menu_st_t	state;
-	task_menu_ev_t	event;
-	bool			flag;
-	int 	id_mode;
-	int parameter;
-	float low_temp;
-	float high_temp;
-	float cl_temp;
-
-} task_menu_dta_t;
-
-*/
-
-#define INITIAL_CURSOR_MODE 0
-
-#define INITIAL_CURSOR_PARAMETER 1
-
 #define MENU_DTA_QTY	(sizeof(task_menu_dta)/sizeof(task_menu_dta_t))
 
-#define QTY_PARAMETERS 3
 
-//defines the ID for each mode
-enum { ID_NORMAL_MODE, ID_SETUP_MODE };
-
-//defines the ID for each parameter from the System
-enum { ID_LOW_TEMP_PARAMETER, ID_HIGH_TEMP_PARAMETER, ID_CL_TEMP_PARAMETER };
-
-
+/* Initializes the menu data*/
 task_menu_dta_t task_menu_dta =
-	{DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, false, INITIAL_CURSOR_MODE, INITIAL_CURSOR_PARAMETER,INITIAL_LOW_TEMP, INITIAL_HIGH_TEMP, INITIAL_CL_TEMP};
+	{DEL_MEN_XX_MIN, ST_MAIN_MENU, EV_MEN_ENT_IDLE, false, INITIAL_ID_MENU, INITIAL_PARAMETER, INITIAL_MENU_LOW_TEMP, INITIAL_MENU_HIGH_TEMP, INITIAL_MENU_CL_TEMP};
 
-
-
-#define MIN_TEMP_VALUE 0
-
-#define MAX_TEMP_VALUE 120
-
-
-#define ID_LOW_TEMP_PARAMETER 0
-#define ID_HIGH_TEMP_PARAMETER 1
-#define ID_CL_TEMP_PARAMETER 2
 
 /********************** internal functions declaration ***********************/
 
@@ -118,9 +78,6 @@ const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
 /********************** external data declaration ****************************/
 uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
-
-/*temperature_dta will be modified by the interactive menu*/
-extern temperature_t temperature_dta;
 
 /********************** external functions definition ************************/
 void task_menu_init(void *parameters)
@@ -175,7 +132,7 @@ void task_menu_update(void *parameters)
 	char menu_str[8];
 
 	//Initialize the pointer to temperature_dta
-	temperature_t* p_temperature_dta = (temperature_t* )parameters;
+	shared_temperature_t* p_shared_temperature_dta = (shared_temperature_t* )parameters;
 
 	/* Update Task Menu Counter */
 	g_task_menu_cnt++;
@@ -323,21 +280,21 @@ void task_menu_update(void *parameters)
 				case ST_LOW_TEMP :
 
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_low_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
 					}
@@ -355,21 +312,21 @@ void task_menu_update(void *parameters)
 
 				case ST_HIGH_TEMP :
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_high_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
 					}
@@ -387,21 +344,21 @@ void task_menu_update(void *parameters)
 
 				case ST_CL_TEMP :
 					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp < MAX_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp ++ ;
 					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
+					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp >= MAX_TEMP_VALUE )
 					{
 						p_task_menu_dta->cl_temp = MIN_TEMP_VALUE ;
 					}
 
 					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp > MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp --;
 					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
+					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->menu_cl_temp <= MIN_TEMP_VALUE  )
 					{
 						p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
 					}

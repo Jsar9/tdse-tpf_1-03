@@ -86,10 +86,6 @@
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
 
-#define INIT_SYS_LOW_TEMP 25
-#define INIT_SYS_HIGH_TEMP 35
-#define INIT_SYS_CL_TEMP 30
-
 /*Stores the variables of the system*/
 task_system_dta_t task_system_dta =
 	{DEL_SYS_XX_MIN, ST_SYS_XX_IDLE, EV_SYS_XX_IDLE, false};
@@ -208,7 +204,7 @@ void task_system_update(void *parameters)
 			case ST_SYS_LOW_TEMP:
 				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
 				{
-
+					/*Resta terminar la máquina de estados*/
 				}
 
 
