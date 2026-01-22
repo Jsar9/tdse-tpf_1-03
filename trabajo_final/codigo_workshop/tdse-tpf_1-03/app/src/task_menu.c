@@ -152,7 +152,7 @@ void task_menu_init(void *parameters)
 
 	// initialize the shared parameters using the previous data stored in flash memory
 
-	// aux variables to check if there's data stored in flash memory
+	// aux variables to check if there's data stored in flash memory before to use it
 	float aux_low_temp, aux_high_temp, aux_cl_temp;
 
 	// reading from flash memory
@@ -161,7 +161,7 @@ void task_menu_init(void *parameters)
 	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &aux_cl_temp);
 
 
-	// checks the first stored value, to see if data it's correct (avoiding nan errors or values out of range)
+	// checks the first stored value, to see if data its correct (avoiding nan errors or values out of range)
 	// if at least one data is invalid, the menu sets default values in each variable
 	    if (is_valid(aux_low_temp) || is_valid(aux_high_temp) || is_valid(aux_cl_temp))
 	    {
@@ -174,14 +174,11 @@ void task_menu_init(void *parameters)
 	        p_shared_temperature_dta->high_temp = INITIAL_MENU_HIGH_TEMP;
 	        p_shared_temperature_dta->cl_temp   = INITIAL_MENU_CL_TEMP;
 
-	        p_task_menu_dta -> low_temp = INITIAL_MENU_LOW_TEMP;
-	        p_task_menu_dta -> high_temp = INITIAL_MENU_HIGH_TEMP;
-	        p_task_menu_dta -> cl_temp = INITIAL_MENU_CL_TEMP;
 	    }
 	    else
 	    {
-	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta
-	        LOGGER_LOG("Cargando configuracion desde Flash...\r\n");
+	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta and the menu structure
+	        LOGGER_LOG("loading data from flash memory\r\n");
 
 	        p_shared_temperature_dta->low_temp  = aux_low_temp;
 	        p_shared_temperature_dta->high_temp = aux_high_temp;
@@ -357,12 +354,12 @@ void task_menu_update(void *parameters)
 							//erase the SELECTED_PAGE
 							flash_erase_page(SELECTED_PAGE);
 
-							//save the data in flash memory, using fixed positions for each variable
+							//save the data in flash memory, using fixed addresses for each variable
 							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &(p_task_menu_dta->low_temp));
 							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &(p_task_menu_dta->high_temp));
 							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &(p_task_menu_dta->cl_temp));
 
-							//update the RAM structure to avoid reading from flash memory
+							//update the shared_temperature_dta structure to avoid reading from flash memory
 							p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
 							p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
 							p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
@@ -411,7 +408,7 @@ void task_menu_update(void *parameters)
 
 					break;
 
-				case ST_HIGH_TEMP :
+				case ST_HIGH_TEMP :data
 					// actions - next (suma)
 					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
 					{

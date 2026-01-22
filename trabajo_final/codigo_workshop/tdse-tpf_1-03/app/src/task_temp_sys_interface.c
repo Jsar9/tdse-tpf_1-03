@@ -29,7 +29,8 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * @file   : task_adc.c
+ *
+ * @file   : task_temp_sys_interface.c
  * @date   : Set 26, 2023
  * @author : Juan Manuel Cruz <jcruz@fi.uba.ar> <jcruz@frba.utn.edu.ar>
  * @version	v1.0.0
@@ -46,86 +47,67 @@
 /* Application & Tasks includes. */
 #include "board.h"
 #include "app.h"
+#include "task_temp_sys_attribute.h"
 
 /********************** macros and definitions *******************************/
-
+#define EVENT_UNDEFINED	(255)
+#define MAX_EVENTS		(16)
 
 /********************** internal data declaration ****************************/
 
-
 /********************** internal functions declaration ***********************/
-HAL_StatusTypeDef ADC_Poll_Read(uint16_t *value);
 
 /********************** internal data definition *****************************/
-const char *p_task_adc 		= "Task ADC";
+struct
+{
+	uint32_t	head;
+	uint32_t	tail;
+	uint32_t	count;
+	task_temp_sys_ev_t	queue[MAX_EVENTS];
+} queue_task_a;
 
-/********************** external data declaration *****************************/
-
-extern ADC_HandleTypeDef hadc1;
+/********************** external data declaration ****************************/
 
 /********************** external functions definition ************************/
-void task_adc_init(void *parameters)
+void init_queue_event_task_temp_sys(void)
 {
-	shared_temperature_dta_t *p_shared_temperature_dta = (shared_temperature_dta_t *) parameters;
+	uint32_t i;
 
-	/* Print out: Task Initialized */
-	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_adc_init), p_task_adc);
+	queue_task_a.head = 0;
+	queue_task_a.tail = 0;
+	queue_task_a.count = 0;
 
-	p_shared_temperature_dta->adc_end_of_conversion = false;
+	for (i = 0; i < MAX_EVENTS; i++)
+		queue_task_a.queue[i] = EVENT_UNDEFINED;
 }
 
-void task_adc_update(void *parameters)
+void put_event_task_temp_sys(task_temp_sys_ev_t event)
 {
+	queue_task_a.count++;
+	queue_task_a.queue[queue_task_a.head++] = event;
 
-	//Initialize the pointer to shared_temperature_dta
-	shared_temperature_dta_t * p_shared_temperature_dta = (shared_temperature_dta_t *) parameters;
-
-
-	if (HAL_OK==ADC_Poll_Read(&p_shared_temperature_dta->adc_read)) { //polling read
-		p_shared_temperature_dta->adc_end_of_conversion = true;
-
-		/***************************	TEMPERATURE CONVERTION	********************/
-
-		//Initialize an auxiliar variable used for adc_read convertion
-		float v_aux= 0;
-
-		// update the previous temperature
-		p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
-
-		// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
-		v_aux = (3.3 * p_shared_temperature_dta->adc_read) / 4095;
-
-		// converts voltage to temperature considering LM35 sensor (10mV / °C) and update the current temperature
-		p_shared_temperature_dta->current_temp = v_aux / 0.01;
-
-
-		p_shared_temperature_dta -> adc_end_of_conversion = false;
-
-		/****************************************************************************/
-	}
-	else {
-		LOGGER_LOG("error\n");
-	}
-
-
+	if (MAX_EVENTS == queue_task_a.head)
+		queue_task_a.head = 0;
 }
 
+task_temp_sys_ev_t get_event_task_temp_sys(void)
 
+{
+	task_temp_sys_ev_t event;
 
-//	Requests start of conversion, waits until conversion done
-HAL_StatusTypeDef ADC_Poll_Read(uint16_t *value) {
-	HAL_StatusTypeDef res;
+	queue_task_a.count--;
+	event = queue_task_a.queue[queue_task_a.tail];
+	queue_task_a.queue[queue_task_a.tail++] = EVENT_UNDEFINED;
 
-	res=HAL_ADC_Start(&hadc1);
-	if ( HAL_OK==res ) {
-		res=HAL_ADC_PollForConversion(&hadc1, 0);
-		if ( HAL_OK==res ) {
-			*value = HAL_ADC_GetValue(&hadc1);
-		}
-	}
-	return res;
+	if (MAX_EVENTS == queue_task_a.tail)
+		queue_task_a.tail = 0;
+
+	return event;
 }
 
-
+bool any_event_task_temp_sys(void)
+{
+  return (queue_task_a.head != queue_task_a.tail);
+}
 
 /********************** end of file ******************************************/
