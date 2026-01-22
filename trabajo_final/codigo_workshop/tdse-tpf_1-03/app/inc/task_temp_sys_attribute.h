@@ -62,15 +62,13 @@ extern "C" {
  */
 
 /* Events to excite Task temp_sys */
-typedef enum task_temp_sys_ev {EV_SYS_XX_IDLE,
-							 EV_SYS_XX_ACTIVE} task_temp_sys_ev_t;
+typedef enum task_temp_sys_ev {EV_TEMP_SYS_XX_IDLE,
+							 EV_TEMP_SYS_XX_ACTIVE} task_temp_sys_ev_t;
 
 /* State of Task temp_sys */
-typedef enum task_temp_sys_st {ST_SYS_XX_IDLE,
-							 ST_SYS_XX_ACTIVE,
-							 ST_SYS_LOW_TEMP,
-							 ST_SYS_MID_TEMP,
-							 ST_SYS_HIGH_TEMP,} task_temp_sys_st_t;
+typedef enum task_temp_sys_st {ST_TEMP_SYS_XX_IDLE,
+							 ST_TEMP_SYS_XX_ACTIVE,
+								} task_temp_sys_st_t;
 
 typedef struct
 {

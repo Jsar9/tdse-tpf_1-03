@@ -83,25 +83,6 @@ void task_adc_update(void *parameters)
 
 	if (HAL_OK==ADC_Poll_Read(&p_shared_temperature_dta->adc_read)) { //polling read
 		p_shared_temperature_dta->adc_end_of_conversion = true;
-
-		/***************************	TEMPERATURE CONVERTION	********************/
-
-		//Initialize an auxiliar variable used for adc_read convertion
-		float v_aux= 0;
-
-		// update the previous temperature
-		p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
-
-		// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
-		v_aux = (3.3 * p_shared_temperature_dta->adc_read) / 4095;
-
-		// converts voltage to temperature considering LM35 sensor (10mV / °C) and update the current temperature
-		p_shared_temperature_dta->current_temp = v_aux / 0.01;
-
-
-		p_shared_temperature_dta -> adc_end_of_conversion = false;
-
-		/****************************************************************************/
 	}
 	else {
 		LOGGER_LOG("error\n");
