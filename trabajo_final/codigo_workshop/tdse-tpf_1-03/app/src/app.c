@@ -72,35 +72,8 @@ typedef struct {
 
 /********************** internal data declaration ****************************/
 
-/**
- *
- * typedef struct
-{
-	bool			adc_end_of_conversion;
-	float			temp;	//current temperature
-
-	bool must_read_low_temp; //its used for check if data is updated from memory flash
-	bool must_read_high_temp;
-	bool must_read_cl_temp;
-	float low_temp;
-	float high_temp;
-	float cl_temp;
-} shared_temperature_t;
- *
- *
- */
-
-
-shared_temperature_t shared_temperature_dta = {
-	true,
-	INITIAL_TEMPERATURE_VALUE,
-	false, //no need a previous configuration from the setup mode to initialize the app
-	false,
-	false,
-	INITIAL_CONFIG_LOW_TEMP,
-	INITIAL_CONFIG_HIGH_TEMP,
-	INITIAL_CONFIG_CL_TEMP
-};
+// declaration of shared data
+shared_temperature_dta_t shared_temperature_dta;
 
 
 
@@ -202,7 +175,7 @@ void app_update(void)
 			}
 	    }
 
-		LOGGER_LOG("%f \n", shared_temperature_dta.temp); //to check if the data is ok
+		LOGGER_LOG("%f \n", shared_temperature_dta.current_temp); //to check if the data is ok
     }
 }
 

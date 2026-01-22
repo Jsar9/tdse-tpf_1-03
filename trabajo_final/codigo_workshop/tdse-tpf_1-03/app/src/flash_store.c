@@ -118,28 +118,49 @@ void flash_write (uint8_t page, uint16_t index, void *data) {
 
 
 
-/* CORREGIIIIRRRR
+/*
+ * This function receives data_out address there the read data will be stored.
+ *
+ *
+ * It starts calculating the data_size (4 bytes in this case bc it's a float)
+ *
+ * then it calculates the number of words in the data_size (4 bytes words, that means 1 word in this case) and checks if the data is
+ * a multiple of 4
+ *
+ * then it's declared a volatile uint32_t pointer, this forces the compilator to read the memory flash in each iteration, avoiding
+ * 	the problem when the compilator only takes the caché data, without check the memory flash data. This happens because the compilator
+ * 	assumes that if inside the while block the data weren't changed, so, the data has the same value, but it doesnt consider the possibility
+ * 	where the hardware changes the data.
+ *
+ *
  */
 void flash_read (uint8_t page, uint16_t index, void *data_out) {
 
     size_t data_size = sizeof(flash_data_t);
 
-    uint32_t num_words = data_size / 4;
+    uint32_t num_words = data_size / 4; //calculate the amount of 4 byte words
 
-    if (data_size % 4 != 0) num_words++;
+    if (data_size % 4 != 0) num_words++; //checks if it's a multiple of 4
 
-    uint32_t addr = get_address(page, index);
+    uint32_t addr = get_address(page, index); // obtains the address where the data was store
 
     // sets a pointer to the destiny (void * data_out)
     uint32_t *p_dest = (uint32_t *)data_out;
 
-    //
+    //forces to read the memory flash in each call.
+    volatile uint32_t *p_flash_address = (volatile uint32_t *)addr;
+
+    // it reads word by word and copy the read_value in the destiny. Then, moves the cursor to the next 4 bytes word
     for (uint32_t i = 0; i < num_words; i++) {
 
-        *p_dest = read_value;
+    	// change the direction of the destiny by the data stored in the flash address
+    	*p_dest = *p_flash_address;
 
-        addr += 4;
-        p_dest++;
+    	//change the direction to be read
+    	p_flash_address++;
+
+    	//change the direction where to store the data
+    	p_dest++;
     }
 }
 

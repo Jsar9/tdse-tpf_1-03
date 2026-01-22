@@ -50,6 +50,7 @@
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
 #include "display.h"
+#include "flash_store.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_MEN_CNT_INI			0ul
@@ -74,10 +75,20 @@ task_menu_dta_t task_menu_dta =
 			INITIAL_PARAMETER,
 			INITIAL_MENU_LOW_TEMP,
 			INITIAL_MENU_HIGH_TEMP,
-			INITIAL_MENU_CL_TEMP};
+			INITIAL_MENU_CL_TEMP,
+			false};
 
 
 /********************** internal functions declaration ***********************/
+
+/*
+ * Its used to verify the obtained data from flash memory
+ *
+ * returns true for invalid data
+ */
+bool is_invalid(float val) {
+    return (isnan(val) || val > MAX_TEMP_VALUE || val < MIN_TEMP_VALUE);
+}
 
 /********************** internal data definition *****************************/
 const char *p_task_menu 		= "Task Menu (Interactive Menu)";
@@ -88,12 +99,16 @@ uint32_t g_task_menu_cnt;
 volatile uint32_t g_task_menu_tick_cnt;
 
 /********************** external functions definition ************************/
+
 void task_menu_init(void *parameters)
 {
 	task_menu_dta_t *p_task_menu_dta;
 	task_menu_st_t	state;
 	task_menu_ev_t	event;
 	bool b_event;
+
+	// initialize the shared data using parameters
+	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t *) parameters;
 
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_menu_init), p_task_menu);
@@ -125,12 +140,62 @@ void task_menu_init(void *parameters)
 	displayInit( DISPLAY_CONNECTION_GPIO_4BITS );
 
     displayCharPositionWrite(0, 0);
-	displayStringWrite("TdSE Bienvenidos");
+	displayStringWrite("TdSE - Trabajo Final");
 
 	displayCharPositionWrite(0, 1);
 	displayStringWrite("Test Nro: ");
 
 	g_task_menu_tick_cnt = G_TASK_MEN_TICK_CNT_INI;
+
+
+	/********************************* INITIALIZATION FROM FLASH MEMORY *************************/
+
+	// initialize the shared parameters using the previous data stored in flash memory
+
+	// aux variables to check if there's data stored in flash memory
+	float aux_low_temp, aux_high_temp, aux_cl_temp;
+
+	// reading from flash memory
+	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &aux_low_temp);
+	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &aux_high_temp);
+	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &aux_cl_temp);
+
+
+	// checks the first stored value, to see if data it's correct (avoiding nan errors or values out of range)
+	// if at least one data is invalid, the menu sets default values in each variable
+	    if (is_valid(aux_low_temp) || is_valid(aux_high_temp) || is_valid(aux_cl_temp))
+	    {
+
+	    	// print information status when flash memory has not valid data
+	        LOGGER_LOG("Invalid data in flash memory - loading default configuration\r\n");
+
+	        // sets initial values
+	        p_shared_temperature_dta->low_temp  = INITIAL_MENU_LOW_TEMP;
+	        p_shared_temperature_dta->high_temp = INITIAL_MENU_HIGH_TEMP;
+	        p_shared_temperature_dta->cl_temp   = INITIAL_MENU_CL_TEMP;
+
+	        p_task_menu_dta -> low_temp = INITIAL_MENU_LOW_TEMP;
+	        p_task_menu_dta -> high_temp = INITIAL_MENU_HIGH_TEMP;
+	        p_task_menu_dta -> cl_temp = INITIAL_MENU_CL_TEMP;
+	    }
+	    else
+	    {
+	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta
+	        LOGGER_LOG("Cargando configuracion desde Flash...\r\n");
+
+	        p_shared_temperature_dta->low_temp  = aux_low_temp;
+	        p_shared_temperature_dta->high_temp = aux_high_temp;
+	        p_shared_temperature_dta->cl_temp   = aux_cl_temp;
+
+
+	        p_task_menu_dta -> low_temp = aux_low_temp;
+	        p_task_menu_dta -> high_temp = aux_high_temp;
+	        p_task_menu_dta -> cl_temp = aux_cl_temp;
+	    }
+
+
+
+
 }
 
 void task_menu_update(void *parameters)
@@ -140,7 +205,7 @@ void task_menu_update(void *parameters)
 	char menu_str[8];
 
 	//Initialize the pointer to temperature_dta
-	shared_temperature_t* p_shared_temperature_dta = (shared_temperature_t* )parameters;
+	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
 
 	/* Update Task Menu Counter */
 	g_task_menu_cnt++;
@@ -217,6 +282,11 @@ void task_menu_update(void *parameters)
 					{
 						p_task_menu_dta->state = ST_SETUP_MODE;
 						put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
+
+						// stores in menu_dta structure the current configuration values
+						p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
+						p_task_menu_dta->high_temp= p_shared_temperature_dta -> high_temp ;
+						p_task_menu_dta->cl_temp= p_shared_temperature_dta -> cl_temp;
 					}
 
 					// actions - esc
@@ -280,6 +350,26 @@ void task_menu_update(void *parameters)
 					// actions - esc
 					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
 					{
+						if(p_task_menu_dta->save_data_required == true)
+						{
+							//save data if there is at least one change in the configuration data
+
+							//erase the SELECTED_PAGE
+							flash_erase_page(SELECTED_PAGE);
+
+							//save the data in flash memory, using fixed positions for each variable
+							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &(p_task_menu_dta->low_temp));
+							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &(p_task_menu_dta->high_temp));
+							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &(p_task_menu_dta->cl_temp));
+
+							//update the RAM structure to avoid reading from flash memory
+							p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
+							p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
+							p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
+
+							p_task_menu_dta->save_data_required = false;
+						}
+
 						p_task_menu_dta->state = ST_MAIN_MENU;
 					}
 
@@ -311,18 +401,11 @@ void task_menu_update(void *parameters)
 					// actions - enter
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
+						// indicates that must be saved the configuration values
+						p_task_menu_dta->save_data_required=true;
 
-
-						/*(guardar en memoria el valor low_temp) + Se debe comprobar que sea menor que el de high_temp*/
-
-
-						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> low_temp*/
-
-						// indicates that the configuration temperatures must be read from flash memory
-						if (p_shared_temperature_dta->must_read_low_temp == false)
-						{
-							p_shared_temperature_dta->must_read_low_temp = true;
-						}
+						// returns to setup mode
+						p_task_menu_dta->state = ST_SETUP_MODE;
 
 					}
 
@@ -351,17 +434,13 @@ void task_menu_update(void *parameters)
 
 
 					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)
+					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
-						/*(guardar en memoria el valor high_temp) y chequear que sea mayor que CL y LOW*/
+						// indicates that must be saved the configuration values
+						p_task_menu_dta->save_data_required=true;
 
-						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> high_temp*/
-
-						// indicates that the configuration temperatures must be read from flash memory
-						if (p_shared_temperature_dta->must_read_high_temp == false)
-							{
-								p_shared_temperature_dta->must_read_high_temp = true;
-							}
+						// returns to setup mode
+						p_task_menu_dta->state = ST_SETUP_MODE;
 					}
 
 					break;
@@ -391,14 +470,11 @@ void task_menu_update(void *parameters)
 					// actions - enter
 					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
 					{
-						/*(guardar en memoria el valor cl_temp) y chequear que sea mayor que LOW y menor que HIGH*/
-						/*Se debe cargar luego el dato de la flash en p_temperature_dta -> cl_temp*/
+						// indicates that must be saved the configuration values
+						p_task_menu_dta->save_data_required=true;
 
-						if (p_shared_temperature_dta->must_read_cl_temp == false)
-						{
-							p_shared_temperature_dta->must_read_cl_temp = true;
-						}
-
+						// returns to setup mode
+						p_task_menu_dta->state = ST_SETUP_MODE;
 					}
 
 					break;

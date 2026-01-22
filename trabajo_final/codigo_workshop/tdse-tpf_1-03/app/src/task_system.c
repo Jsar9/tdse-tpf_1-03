@@ -60,29 +60,8 @@
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
 
+
 /********************** internal data declaration ****************************/
-
-/*
- *
- * PARA FACILIDAD DE LECTURA
- * typedef struct
-{
-	uint32_t			tick;
-	task_system_st_t	state;
-	task_system_ev_t	event;
-	bool				flag;
-	float				temp;
-	float				low_temp;
-	float				high_temp;
-	float				cl_temp;
-} task_system_dta_t;
- *
- *
- * */
-
-
-
-
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
 
@@ -110,6 +89,7 @@ void task_system_init(void *parameters)
 	task_system_st_t	state;
 	task_system_ev_t	event;
 	bool b_event;
+
 
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_system_init), p_task_system);
@@ -182,6 +162,11 @@ void task_system_update(void *parameters)
 			p_task_system_dta->event = get_event_task_system();
 		}
 
+
+
+
+
+
 		switch (p_task_system_dta->state)
 		{
 			case ST_SYS_XX_ACTIVE:
@@ -206,32 +191,12 @@ void task_system_update(void *parameters)
 
 
 
-				// update the configuration data from memory flash when it's needed
 
-
-				if ((shared_temperature_dta-> must_read_low_temp == true))
-				{
-					// leer datos de flash y copiar en shared_temperature_dta-> low_temp;
-
-					shared_temperature_dta -> must_read_low_temp = false; // reset the flag
-				}
-
-				if ((shared_temperature_dta-> must_read_high_temp == true))
-				{
-					// leer datos de flash y copiar en shared_temperature_dta-> high_temp;
-
-					shared_temperature_dta -> must_read_high_temp = false; // reset the flag
-				}
-
-				if ((shared_temperature_dta-> must_read_cl_temp == true))
-				{
-					// leer datos de flash y copiar en shared_temperature_dta-> cl_temp;
-
-					shared_temperature_dta -> must_read_cl_temp = false; // reset the flag
 				}
 
 				break;
 
+				// CORREGIR Y TERMINAR
 			case ST_SYS_LOW_TEMP:
 				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
 				{
@@ -240,7 +205,7 @@ void task_system_update(void *parameters)
 
 
 				/*transition cases*/
-				if((p_task_system_dta->flag) && (p_temperature_dta->temp > p_temperature_dta->low_temp) && (p_temperature_dta->temp < p_temperature_dta->high_temp))
+				if((p_task_system_dta->flag) && (p_shared_temperature_dta->current_temp > p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp))
 				{
 					p_task_system_dta -> state = ST_SYS_MID_TEMP;
 				}

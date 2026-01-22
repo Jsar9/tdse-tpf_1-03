@@ -13,4 +13,26 @@ typedef float flash_data_t; // the data type to store in flash memory
 
 #define PAGE_MAX_CODE_SIZE 64
 
+
+
+// data store selection
+#define SELECTED_PAGE 120
+#define FLASH_SLOT_INDEX_LOW_TEMP 0
+#define FLASH_SLOT_INDEX_HIGH_TEMP 1
+#define FLASH_SLOT_INDEX_CL_TEMP 2
+
+
+
+
+// functions
+
+uint32_t get_address (uint8_t page, uint16_t index);
+
+void flash_erase_page (uint8_t page);
+
+void flash_write (uint8_t page, uint16_t index, void *data);
+
+void flash_read (uint8_t page, uint16_t index, void *data_out);
+
+
 #endif // FLASH_STORE_H

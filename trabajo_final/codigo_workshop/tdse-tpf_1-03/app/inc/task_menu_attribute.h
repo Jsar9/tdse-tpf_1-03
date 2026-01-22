@@ -110,6 +110,7 @@ typedef struct
 	float low_temp;
 	float high_temp;
 	float cl_temp;
+	bool save_data_required;
 } task_menu_dta_t;
 
 /********************** external data declaration ****************************/

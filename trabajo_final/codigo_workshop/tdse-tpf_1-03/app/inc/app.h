@@ -52,26 +52,20 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
-#define INITIAL_TEMPERATURE_VALUE 15
-
-# define INITIAL_CONFIG_LOW_TEMP 10
-# define INITIAL_CONFIG_HIGH_TEMP 30
-# define INITIAL_CONFIG_CL_TEMP 20
 
 /********************** typedef **********************************************/
 
 typedef struct
 {
 	bool			adc_end_of_conversion;
-	float			temp;	//current temperature from adc
+	float			adc_read;	//will be the current temperature from adc
+	float			current_temp; //it's the current converted adc read
+	float			previous_temp; //it's the previous temperature read
 
-	bool must_read_low_temp; //its used for check if data is updated from memory flash
-	bool must_read_high_temp;
-	bool must_read_cl_temp;
-	float low_temp;
-	float high_temp;
-	float cl_temp;
-} shared_temperature_t;
+	float 			low_temp;
+	float 			high_temp;
+	float 			cl_temp;
+} shared_temperature_dta_t;
 
 
 /********************** external data declaration ****************************/
@@ -79,8 +73,6 @@ extern uint32_t g_app_cnt;
 extern uint32_t g_app_time_us;
 
 extern volatile uint32_t g_app_tick_cnt;
-
-extern shared_temperature_t shared_temperature_dta;
 
 /********************** external functions declaration ***********************/
 void app_init(void);
