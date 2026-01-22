@@ -82,13 +82,14 @@ const task_cfg_t task_cfg_list[]	= {
 
 		{task_actuator_init, task_actuator_update,	NULL},
 
-		{task_adc_init, task_adc_update,			&shared_temperature_dta},
-
 		{task_menu_init, task_menu_update, 			&shared_temperature_dta},
 
-		{task_system_init, task_system_update,		&shared_temperature_dta},
+		{task_adc_init, task_adc_update,			&shared_temperature_dta},
 
-		{task_temp_sys_init, task_temp_sys_update,  &shared_temperature_dta}
+		{task_temp_sys_init, task_temp_sys_update,  &shared_temperature_dta},
+
+		{task_system_init, task_system_update,		&shared_temperature_dta}
+
 };
 
 #define TASK_QTY	(sizeof(task_cfg_list)/sizeof(task_cfg_t))

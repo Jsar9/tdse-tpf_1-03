@@ -257,221 +257,289 @@ void task_menu_update(void *parameters)
 			{
 				case ST_MAIN_MENU:
 
-					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
+					// cheks if there's a new event
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->id_mode++;
-					}
 
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode >= QTY_MODES)
-					{
-						p_task_menu_dta->id_mode = 0;
-					}
+						// actions - next
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
+						{
+							p_task_menu_dta->id_mode++;
 
-					// actions - enter
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
-					{
-						p_task_menu_dta->state = ST_NORMAL_MODE;
-						put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the system during normal mode
-					}
+							p_task_menu_dta->flag = false;
+						}
 
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
-					{
-						p_task_menu_dta->state = ST_SETUP_MODE;
-						put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode >= QTY_MODES)
+						{
+							p_task_menu_dta->id_mode = 0;
+							p_task_menu_dta->flag = false;
+						}
 
-						// stores in menu_dta structure the current configuration values
-						p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
-						p_task_menu_dta->high_temp= p_shared_temperature_dta -> high_temp ;
-						p_task_menu_dta->cl_temp= p_shared_temperature_dta -> cl_temp;
-					}
+						// actions - enter
+						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
+						{
+							p_task_menu_dta->state = ST_NORMAL_MODE;
+							put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the system during normal mode
+							p_task_menu_dta->flag = false;
+						}
 
-					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
-					{
-						p_task_menu_dta->state = ST_MAIN_MENU;
+						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
+						{
+							p_task_menu_dta->state = ST_SETUP_MODE;
+							put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
+
+							// stores in menu_dta structure the current configuration values
+							p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
+							p_task_menu_dta->high_temp= p_shared_temperature_dta -> high_temp ;
+							p_task_menu_dta->cl_temp= p_shared_temperature_dta -> cl_temp;
+
+							p_task_menu_dta->flag = false;
+						}
+
+						// actions - esc
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
+						{
+							p_task_menu_dta->state = ST_MAIN_MENU;
+							p_task_menu_dta->flag = false;
+						}
 					}
 
 					break;
 
 				case ST_NORMAL_MODE:
 
-					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->state = ST_MAIN_MENU;
-						put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system
-					}
 
-					if((EV_MEN_ESC_IDLE == p_task_menu_dta->event) || (EV_MEN_ENT_IDLE == p_task_menu_dta->event) || (EV_MEN_NEX_IDLE == p_task_menu_dta->event))
-					{
-						// SI NO SE PRESIONÓ NINGÚN BOTÓN:
-						//se debe imprimir por display la temperatura leída del ADC (ya configurado, los shared data son los temperature_dta)p_temperature_dta->temp;
-					}
+						// actions - esc
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
+						{
+							p_task_menu_dta->state = ST_MAIN_MENU;
+							put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system
+							p_task_menu_dta->flag = false;
+						}
 
+						if((EV_MEN_ESC_IDLE == p_task_menu_dta->event) || (EV_MEN_ENT_IDLE == p_task_menu_dta->event) || (EV_MEN_NEX_IDLE == p_task_menu_dta->event))
+						{
+							// SI NO SE PRESIONÓ NINGÚN BOTÓN:
+							//se debe imprimir por display la temperatura leída del ADC (ya configurado, los shared data son los temperature_dta)p_temperature_dta->temp;
+							p_task_menu_dta->flag = false;
+						}
+
+
+					}
 
 					break;
 
 				case ST_SETUP_MODE:
 
-
-					// actions - next
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter < QTY_PARAMETERS)
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->parameter++ ;
-					}
 
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter >= QTY_PARAMETERS )
-					{
-						p_task_menu_dta->parameter = 0 ;
-					}
-
-
-					// actions - enter
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_LOW_TEMP_PARAMETER)
-					{
-						p_task_menu_dta->state = ST_LOW_TEMP;
-					}
-
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_HIGH_TEMP_PARAMETER)
-					{
-						p_task_menu_dta->state = ST_HIGH_TEMP;
-					}
-
-					if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_CL_TEMP_PARAMETER)
-					{
-						p_task_menu_dta->state = ST_CL_TEMP;
-					}
-
-
-					// actions - esc
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
-					{
-						if(p_task_menu_dta->save_data_required == true)
+						// actions - next
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter < QTY_PARAMETERS)
 						{
-							//save data if there is at least one change in the configuration data
-
-							//erase the SELECTED_PAGE
-							flash_erase_page(SELECTED_PAGE);
-
-							//save the data in flash memory, using fixed addresses for each variable
-							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &(p_task_menu_dta->low_temp));
-							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &(p_task_menu_dta->high_temp));
-							flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &(p_task_menu_dta->cl_temp));
-
-							//update the shared_temperature_dta structure to avoid reading from flash memory
-							p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
-							p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
-							p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
-
-							p_task_menu_dta->save_data_required = false;
+							p_task_menu_dta->parameter++ ;
+							p_task_menu_dta->flag = false;
 						}
 
-						p_task_menu_dta->state = ST_MAIN_MENU;
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter >= QTY_PARAMETERS )
+						{
+							p_task_menu_dta->parameter = 0 ;
+							p_task_menu_dta->flag = false;
+						}
+
+
+						// actions - enter
+						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_LOW_TEMP_PARAMETER)
+						{
+							p_task_menu_dta->state = ST_LOW_TEMP;
+							p_task_menu_dta->flag = false;
+						}
+
+						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_HIGH_TEMP_PARAMETER)
+						{
+							p_task_menu_dta->state = ST_HIGH_TEMP;
+							p_task_menu_dta->flag = false;
+						}
+
+						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_CL_TEMP_PARAMETER)
+						{
+							p_task_menu_dta->state = ST_CL_TEMP;
+							p_task_menu_dta->flag = false;
+						}
+
+
+						// actions - esc
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event )
+						{
+							if(p_task_menu_dta->save_data_required == true)
+							{
+								//save data if there is at least one change in the configuration data
+
+								//erase the SELECTED_PAGE
+								flash_erase_page(SELECTED_PAGE);
+
+								//save the data in flash memory, using fixed addresses for each variable
+								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &(p_task_menu_dta->low_temp));
+								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &(p_task_menu_dta->high_temp));
+								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &(p_task_menu_dta->cl_temp));
+
+								//update the shared_temperature_dta structure to avoid reading from flash memory
+								p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
+								p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
+								p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
+
+								p_task_menu_dta->save_data_required = false;
+							}
+
+							p_task_menu_dta->state = ST_MAIN_MENU;
+							p_task_menu_dta->flag = false;
+						}
 					}
 
 					break;
 
 				case ST_LOW_TEMP :
 
-					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->low_temp ++ ;
-					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
-					{
-						p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
-					}
 
-					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
-					{
-						p_task_menu_dta->low_temp --;
-					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
-					{
-						p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
-					}
+						// actions - next (suma)
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
+						{
+							p_task_menu_dta->low_temp ++ ;
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
+						{
+							p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
+							p_task_menu_dta->flag = false;
+						}
+
+						// actions - esc (resta)
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->low_temp --;
+
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
+
+							p_task_menu_dta->flag = false;
+						}
 
 
-					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
-					{
-						// indicates that must be saved the configuration values
-						p_task_menu_dta->save_data_required=true;
+						// actions - enter
+						if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
+						{
+							// indicates that must be saved the configuration values
+							p_task_menu_dta->save_data_required=true;
 
-						// returns to setup mode
-						p_task_menu_dta->state = ST_SETUP_MODE;
+							// returns to setup mode
+							p_task_menu_dta->state = ST_SETUP_MODE;
+
+							p_task_menu_dta->flag = false;
+
+						}
 
 					}
 
 					break;
 
-				case ST_HIGH_TEMP :data
-					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
-					{
-						p_task_menu_dta->high_temp ++ ;
-					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
-					{
-						p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
-					}
+				case ST_HIGH_TEMP :
 
-					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->high_temp --;
-					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
-					{
-						p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
-					}
+
+						// actions - next (suma)
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
+						{
+							p_task_menu_dta->high_temp ++ ;
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
+						{
+							p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
+							p_task_menu_dta->flag = false;
+						}
+
+						// actions - esc (resta)
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->high_temp --;
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
+							p_task_menu_dta->flag = false;
+						}
 
 
-					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
-					{
-						// indicates that must be saved the configuration values
-						p_task_menu_dta->save_data_required=true;
+						// actions - enter
+						if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
+						{
+							// indicates that must be saved the configuration values
+							p_task_menu_dta->save_data_required=true;
 
-						// returns to setup mode
-						p_task_menu_dta->state = ST_SETUP_MODE;
+							// returns to setup mode
+							p_task_menu_dta->state = ST_SETUP_MODE;
+
+							p_task_menu_dta->flag = false;
+						}
+
 					}
 
 					break;
 
 				case ST_CL_TEMP :
-					// actions - next (suma)
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
-					{
-						p_task_menu_dta->cl_temp ++ ;
-					}
-					if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
-					{
-						p_task_menu_dta->cl_temp = MIN_TEMP_VALUE ;
-					}
 
-					// actions - esc (resta)
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
+					if(p_task_menu_dta->flag ==  true )
 					{
-						p_task_menu_dta->cl_temp --;
-					}
-					if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
-					{
-						p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
-					}
+						// actions - next (suma)
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
+						{
+							p_task_menu_dta->cl_temp ++;
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
+						{
+							p_task_menu_dta->cl_temp = MIN_TEMP_VALUE;
+							p_task_menu_dta->flag = false;
+						}
+
+						// actions - esc (resta)
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->cl_temp --;
+							p_task_menu_dta->flag = false;
+						}
+
+						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
+						{
+							p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
+							p_task_menu_dta->flag = false;
+						}
 
 
-					// actions - enter
-					if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event )
-					{
-						// indicates that must be saved the configuration values
-						p_task_menu_dta->save_data_required=true;
+						// actions - enter
+						if(EV_MEN_ENT_ACTIVE == p_task_menu_dta->event)
+						{
+							// indicates that must be saved the configuration values
+							p_task_menu_dta->save_data_required=true;
 
-						// returns to setup mode
-						p_task_menu_dta->state = ST_SETUP_MODE;
+							// returns to setup mode
+							p_task_menu_dta->state = ST_SETUP_MODE;
+							p_task_menu_dta->flag = false;
+						}
 					}
 
 					break;
