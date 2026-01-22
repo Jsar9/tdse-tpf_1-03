@@ -233,12 +233,12 @@ void task_temp_sys_update(void *parameters)
 				// **************** EV_SYS_XX_ACTIVE
 				if ((p_task_temp_sys_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event))
 				{
-					p_task_temp_sys_dta->flag = false;
 					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
+					p_task_temp_sys_dta->flag = false;
 				}
 
 				// **************** EV_SYS_XX_IDLE
-				if((p_task_temp_sys_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event))
+				if((p_task_temp_sys_dta->flag) && (EV_SYS_XX_IDLE == p_task_temp_sys_dta->event))
 				{
 					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
 					p_task_temp_sys_dta->flag = false;
@@ -250,7 +250,10 @@ void task_temp_sys_update(void *parameters)
 
 			default:
 
-				p_task_temp_sys_dta->state = ST_SYS_XX_IDLE;
+				p_task_temp_sys_dta->tick = DEL_TEMP_SYS_XX_MIN;
+				p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
+				p_task_temp_sys_dta->event = EV_TEMP_SYS_XX_IDLE;
+				p_task_temp_sys_dta->flag = false;
 
 				break;
 		}
