@@ -158,40 +158,93 @@ void task_system_update(void *parameters)
 
 		if (true == any_event_task_system())
 		{
-			p_task_system_dta->flag = true;
-			p_task_system_dta->event = get_event_task_system();
+			p_task_system_dta->flag = true; // indicates that there's at least one event in list events
+			p_task_system_dta->event = get_event_task_system(); //takes the event
 		}
-
-
-
-
 
 
 		switch (p_task_system_dta->state)
 		{
 			case ST_SYS_XX_ACTIVE:
 
-				if ( (!p_task_system_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_system_dta->event) )
+				if(p_task_system_dta->flag == true)
 				{
-					p_task_system_dta->flag = true;
-					p_task_system_dta->state = ST_SYS_LOW_TEMP; /*comienza por defecto en low temp*/
+
+					if (p_task_system_dta->event == EV_SYS_XX_IDLE )
+					{
+						p_task_system_dta->state = ST_SYS_XX_IDLE;
+
+						// turns off all leds
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_GREEN);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_RED);
+
+						p_task_system_dta->flag = false;
+					}
+
+
+					// if there's at least one event about the temperature, the active mode must check the current_temperature to
+					// decide which is the next state
+
+					// EACH STATE DECIDES WHAT TO DO CONSIDERING THE CURRENT_TEMP VALUE
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING || p_task_system_dta->event == EV_SYS_TEMP_DECREASING )
+					{
+
+						if(p_shared_temperature_dta->current_temp <= p_shared_temperature_dta->low_temp)
+						{
+							p_task_system_dta->state = ST_SYS_LOW_TEMP;
+						}
+
+
+						// if (current_temp > low_temp && current_temp < high_temp )
+						if( (p_shared_temperature_dta->current_temp > p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp) )
+						{
+							p_task_system_dta->state = ST_SYS_MID_TEMP;
+						}
+
+
+						// if (current_temp > high_temp )
+						if( p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp)
+						{
+							p_task_system_dta->state = ST_SYS_HIGH_TEMP;
+						}
+
+						p_task_system_dta->flag = false;
+
+					}
+
+
+					/*if ( p_task_system_dta->event == EV_SYS_XX_ACTIVE )
+					{
+						p_task_system_dta->state = ST_SYS_LOW_TEMP;
+						p_task_system_dta->flag = false;
+					}*/
 				}
 
 				break;
 
 			case ST_SYS_XX_IDLE:
 
-				if ((p_task_system_dta->flag) && (EV_SYS_XX_IDLE == p_task_system_dta->event))
+				if (p_task_system_dta->flag == true)
 				{
-					p_task_system_dta->flag = false;
-					p_task_system_dta->state = ST_SYS_XX_IDLE; /*se deben apagar las luces, etc*/
-				}
 
+					if (p_task_system_dta->event == EV_SYS_XX_IDLE)
+					{
+						p_task_system_dta->state = ST_SYS_XX_IDLE;
+						p_task_system_dta->flag = false;
+					}
 
+					if(p_task_system_dta->event == EV_SYS_SAVE_CONFIG )
+					{
+						p_task_system_dta->state = ST_SYS_SAVE_CONFIG;
+						p_task_system_dta->flag = false;
+					}
 
-
-
-
+					if(p_task_system_dta->event == EV_SYS_XX_ACTIVE)
+					{
+						p_task_system_dta->state = ST_SYS_XX_ACTIVE;
+						p_task_system_dta->flag = false;
+					}
 				}
 
 				break;

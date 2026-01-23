@@ -60,19 +60,26 @@
 
 /********************** internal data declaration ****************************/
 const task_actuator_cfg_t task_actuator_cfg_list[] = {
+
 	{ID_LED_GREEN,  LED_GREEN_PORT,  LED_GREEN_PIN, LED_GREEN_ON,  LED_GREEN_OFF,
-	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
+		DEL_LED_XX_BLI, DEL_LED_XX_PUL},
+
 	{ID_LED_YELLOW,  LED_YELLOW_PORT,  LED_YELLOW_PIN, LED_YELLOW_ON,  LED_YELLOW_OFF,
 	 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
+
 	{ID_LED_RED,  LED_RED_PORT,  LED_RED_PIN, LED_RED_ON,  LED_RED_OFF,
-		 	 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL}
+		 DEL_LED_XX_BLI, DEL_LED_XX_PUL}
+
 };
 
 #define ACTUATOR_CFG_QTY	(sizeof(task_actuator_cfg_list)/sizeof(task_actuator_cfg_t))
 
 task_actuator_dta_t task_actuator_dta_list[] = {
+
 	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true},
+
 	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true},
+
 	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true}
 };
 
@@ -245,7 +252,6 @@ void task_actuator_update(void *parameters)
 					   HAL_GPIO_WritePin(p_task_actuator_cfg->gpio_port, p_task_actuator_cfg->pin, p_task_actuator_cfg->led_off);
 					   p_task_actuator_dta->tick = p_task_actuator_cfg-> tick_blink;
  					   p_task_actuator_dta->state = ST_LED_XX_BLINK_OFF;
-
 					}
 
 
