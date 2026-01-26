@@ -47,7 +47,11 @@ extern "C" {
 
 /********************** macros ***********************************************/
 
-/********************** typedef **********************************************/
+#define INITIAL_LOW_TEMP 20
+#define INITIAL_HIGH_TEMP 40
+#define INITIAL_CL_TEMP 35
+
+/********************* typedef **********************************************/
 
 /********************** external data declaration ****************************/
 extern uint32_t g_task_system_cnt;

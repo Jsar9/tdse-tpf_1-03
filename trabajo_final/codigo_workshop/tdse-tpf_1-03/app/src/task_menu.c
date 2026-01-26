@@ -50,7 +50,6 @@
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
 #include "display.h"
-#include "flash_store.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_MEN_CNT_INI			0ul
@@ -81,15 +80,6 @@ task_menu_dta_t task_menu_dta =
 
 /********************** internal functions declaration ***********************/
 
-/*
- * Its used to verify the obtained data from flash memory
- *
- * returns true for invalid data
- */
-bool is_invalid(float val) {
-    return (isnan(val) || val > MAX_TEMP_VALUE || val < MIN_TEMP_VALUE);
-}
-
 /********************** internal data definition *****************************/
 const char *p_task_menu 		= "Task Menu (Interactive Menu)";
 const char *p_task_menu_ 		= "Non-Blocking & Update By Time Code";
@@ -106,9 +96,6 @@ void task_menu_init(void *parameters)
 	task_menu_st_t	state;
 	task_menu_ev_t	event;
 	bool b_event;
-
-	// initialize the shared data using parameters
-	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t *) parameters;
 
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_menu_init), p_task_menu);
@@ -146,60 +133,13 @@ void task_menu_init(void *parameters)
 	displayStringWrite("Test Nro: ");
 
 	g_task_menu_tick_cnt = G_TASK_MEN_TICK_CNT_INI;
-
-
-	/********************************* INITIALIZATION FROM FLASH MEMORY *************************/
-
-	// initialize the shared parameters using the previous data stored in flash memory
-
-	// aux variables to check if there's data stored in flash memory before to use it
-	float aux_low_temp, aux_high_temp, aux_cl_temp;
-
-	// reading from flash memory
-	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &aux_low_temp);
-	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &aux_high_temp);
-	flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &aux_cl_temp);
-
-
-	// checks the first stored value, to see if data its correct (avoiding nan errors or values out of range)
-	// if at least one data is invalid, the menu sets default values in each variable
-	    if (is_valid(aux_low_temp) || is_valid(aux_high_temp) || is_valid(aux_cl_temp))
-	    {
-
-	    	// print information status when flash memory has not valid data
-	        LOGGER_LOG("Invalid data in flash memory - loading default configuration\r\n");
-
-	        // sets initial values
-	        p_shared_temperature_dta->low_temp  = INITIAL_MENU_LOW_TEMP;
-	        p_shared_temperature_dta->high_temp = INITIAL_MENU_HIGH_TEMP;
-	        p_shared_temperature_dta->cl_temp   = INITIAL_MENU_CL_TEMP;
-
-	    }
-	    else
-	    {
-	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta and the menu structure
-	        LOGGER_LOG("loading data from flash memory\r\n");
-
-	        p_shared_temperature_dta->low_temp  = aux_low_temp;
-	        p_shared_temperature_dta->high_temp = aux_high_temp;
-	        p_shared_temperature_dta->cl_temp   = aux_cl_temp;
-
-
-	        p_task_menu_dta -> low_temp = aux_low_temp;
-	        p_task_menu_dta -> high_temp = aux_high_temp;
-	        p_task_menu_dta -> cl_temp = aux_cl_temp;
-	    }
-
-
-
-
 }
 
 void task_menu_update(void *parameters)
 {
 	task_menu_dta_t *p_task_menu_dta;
 	bool b_time_update_required = false;
-	char menu_str[8];
+	char menu_str[21];
 
 	//Initialize the pointer to temperature_dta
 	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
@@ -257,15 +197,40 @@ void task_menu_update(void *parameters)
 			{
 				case ST_MAIN_MENU:
 
+					/******************** START DISPLAY MSSGS********************/
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("     Main menu:     ");
+
+
+					if(p_task_menu_dta->id_mode == ID_NORMAL_MODE)
+					{
+						snprintf(menu_str, sizeof(menu_str), "Modo: NORMAL        ");
+					}
+
+					if(p_task_menu_dta->id_mode == ID_NORMAL_MODE)
+					{
+						snprintf(menu_str, sizeof(menu_str), "Modo: SETUP        ");
+					}
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
+					/*********************** START MENU INTERACTIONS ***********************/
+
 					// cheks if there's a new event
 					if(p_task_menu_dta->flag ==  true )
 					{
+
+
 
 						// actions - next
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
 						{
 							p_task_menu_dta->id_mode++;
-
 							p_task_menu_dta->flag = false;
 						}
 
@@ -275,18 +240,23 @@ void task_menu_update(void *parameters)
 							p_task_menu_dta->flag = false;
 						}
 
+
+
 						// actions - enter
 						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
 						{
 							p_task_menu_dta->state = ST_NORMAL_MODE;
-							put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the system during normal mode
+							put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the main system during normal mode
+							put_event_task_temp_sys(EV_TEMP_SYS_XX_ACTIVE); //turns on the temp system during normal mode
 							p_task_menu_dta->flag = false;
 						}
 
 						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
 						{
 							p_task_menu_dta->state = ST_SETUP_MODE;
+
 							put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
+							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE); //turns off the temp system during setup mode
 
 							// stores in menu_dta structure the current configuration values
 							p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
@@ -295,6 +265,8 @@ void task_menu_update(void *parameters)
 
 							p_task_menu_dta->flag = false;
 						}
+
+
 
 						// actions - esc
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
@@ -308,25 +280,33 @@ void task_menu_update(void *parameters)
 
 				case ST_NORMAL_MODE:
 
+
+					/******************** START DISPLAY MSSGS********************/
+
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("    Normal mode:    ");
+
+					// added a flag to print floats
+					snprintf(menu_str, sizeof(menu_str), "Temp: %.1f C       ", p_shared_temperature_dta->temp);
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+					/********************** START MENU INTERACTION **********************/
+
+
 					if(p_task_menu_dta->flag ==  true )
 					{
-
 						// actions - esc
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 						{
 							p_task_menu_dta->state = ST_MAIN_MENU;
-							put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system
+							put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system when esc is pressed
+							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE);
 							p_task_menu_dta->flag = false;
 						}
-
-						if((EV_MEN_ESC_IDLE == p_task_menu_dta->event) || (EV_MEN_ENT_IDLE == p_task_menu_dta->event) || (EV_MEN_NEX_IDLE == p_task_menu_dta->event))
-						{
-							// SI NO SE PRESIONÓ NINGÚN BOTÓN:
-							//se debe imprimir por display la temperatura leída del ADC (ya configurado, los shared data son los temperature_dta)p_temperature_dta->temp;
-							p_task_menu_dta->flag = false;
-						}
-
-
 					}
 
 					break;
@@ -340,6 +320,9 @@ void task_menu_update(void *parameters)
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter < QTY_PARAMETERS)
 						{
 							p_task_menu_dta->parameter++ ;
+
+
+
 							p_task_menu_dta->flag = false;
 						}
 
@@ -375,21 +358,15 @@ void task_menu_update(void *parameters)
 						{
 							if(p_task_menu_dta->save_data_required == true)
 							{
-								//save data if there is at least one change in the configuration data
-
-								//erase the SELECTED_PAGE
-								flash_erase_page(SELECTED_PAGE);
-
-								//save the data in flash memory, using fixed addresses for each variable
-								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, &(p_task_menu_dta->low_temp));
-								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, &(p_task_menu_dta->high_temp));
-								flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, &(p_task_menu_dta->cl_temp));
-
-								//update the shared_temperature_dta structure to avoid reading from flash memory
+								//update shared_temperature_dta struct using local menu data
 								p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
 								p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
 								p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
 
+								//sends the instruction to save the configuration data in flash memory
+								put_event_task_system(EV_SYS_SAVE_CONFIG);
+
+								//turns off flag for data storage
 								p_task_menu_dta->save_data_required = false;
 							}
 

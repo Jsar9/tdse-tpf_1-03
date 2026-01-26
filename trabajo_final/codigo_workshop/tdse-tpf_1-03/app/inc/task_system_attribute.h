@@ -64,18 +64,18 @@ extern "C" {
 /* Events to excite Task System */
 typedef enum task_system_ev {EV_SYS_XX_IDLE,
 							 EV_SYS_XX_ACTIVE,
-							 EV_SYS_SAVE_CONFIG,
 							 EV_TEMP_INCREASING,
-							 EV_TEMP_DECREASING
+							 EV_TEMP_DECREASING,
+							 EV_SYS_SAVE_CONFIG
 } task_system_ev_t;
 
 /* State of Task System */
 typedef enum task_system_st {ST_SYS_XX_IDLE,
 							 ST_SYS_XX_ACTIVE,
-							 ST_SYS_SAVE_CONFIG,
 							 ST_SYS_LOW_TEMP,
 							 ST_SYS_MID_TEMP,
-							 ST_SYS_HIGH_TEMP,} task_system_st_t;
+							 ST_SYS_HIGH_TEMP
+								} task_system_st_t;
 
 typedef struct
 {

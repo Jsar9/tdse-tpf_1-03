@@ -74,6 +74,55 @@ task_system_dta_t task_system_dta =
 
 /********************** internal functions declaration ***********************/
 
+
+/*
+ * Its used to verify the obtained data from flash memory
+ *
+ * returns true for invalid data
+ */
+bool is_invalid(float val) {
+    return (isnan(val) || val > MAX_TEMP_VALUE || val < MIN_TEMP_VALUE);
+}
+
+/*
+ * Reads data from flash memory, using defined macros in flash_store.h for addressing
+ * 	can be modified to read from any other kind of memory storage
+ *
+ */
+
+void read_data (void* low_temp, void* high_temp, void* cl_temp)
+{
+		// reading from flash memory
+		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
+		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
+		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
+}
+
+
+/*
+ * Saves given data in flash memory, using defined macros in flash_store.h for addressing.
+ * 	can be modified to read from any other kind of memory storage
+ *
+ */
+
+void save_data(void* low_temp, void* high_temp, void* cl_temp)
+{
+
+	// avoids null pointer assignment
+	if (low_temp && high_temp && cl_temp)
+	{
+		//erase the SELECTED_PAGE
+		flash_erase_page(SELECTED_PAGE);
+
+		//save the data in flash memory, using fixed addresses for each variable
+		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
+		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
+		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
+	}
+}
+
+
+
 /********************** internal data definition *****************************/
 const char *p_task_system 		= "Task System (System Statechart)";
 const char *p_task_system_ 		= "Non-Blocking & Update By Time Code";
@@ -89,6 +138,9 @@ void task_system_init(void *parameters)
 	task_system_st_t	state;
 	task_system_ev_t	event;
 	bool b_event;
+
+	//Initialize the pointer to temperature_dta
+	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
 
 
 	/* Print out: Task Initialized */
@@ -116,6 +168,37 @@ void task_system_init(void *parameters)
 	LOGGER_LOG("   %s = %s\r\n", GET_NAME(b_event), (b_event ? "true" : "false"));
 
 	g_task_system_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
+
+	// *************************************************** INIT CONFIGURATION DATA
+
+	float aux_low_temp, aux_high_temp, aux_cl_temp;
+
+	read_data(&aux_low_temp,&aux_high_temp, &aux_cl_temp);
+
+	// if at least one saved data is invalid, the system sets default values in each variable
+	if (is_invalid(aux_low_temp) || is_invalid(aux_high_temp) || is_invalid(aux_cl_temp))
+	    {
+	    	// print information status when flash memory has not valid data
+	        LOGGER_LOG("Invalid stored data - loading default configuration\r\n");
+
+	        // sets initial values
+	        p_shared_temperature_dta->low_temp  = INITIAL_LOW_TEMP;
+	        p_shared_temperature_dta->high_temp = INITIAL_HIGH_TEMP;
+	        p_shared_temperature_dta->cl_temp   = INITIAL_CL_TEMP;
+
+	    }
+	    else
+	    {
+	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta and the menu structure
+	        LOGGER_LOG("loading stored data\r\n");
+
+	        p_shared_temperature_dta->low_temp  = aux_low_temp;
+	        p_shared_temperature_dta->high_temp = aux_high_temp;
+	        p_shared_temperature_dta->cl_temp   = aux_cl_temp;
+	    }
+
+	/**********************************************************************/
+
 }
 
 void task_system_update(void *parameters)
@@ -158,7 +241,7 @@ void task_system_update(void *parameters)
 
 		if (true == any_event_task_system())
 		{
-			p_task_system_dta->flag = true; // indicates that there's at least one event in list events
+			p_task_system_dta->flag = true; // indicates that there's at least one event in the event list
 			p_task_system_dta->event = get_event_task_system(); //takes the event
 		}
 
@@ -234,20 +317,25 @@ void task_system_update(void *parameters)
 						p_task_system_dta->flag = false;
 					}
 
-					if(p_task_system_dta->event == EV_SYS_SAVE_CONFIG )
-					{
-						p_task_system_dta->state = ST_SYS_SAVE_CONFIG;
-						p_task_system_dta->flag = false;
-					}
 
 					if(p_task_system_dta->event == EV_SYS_XX_ACTIVE)
 					{
 						p_task_system_dta->state = ST_SYS_XX_ACTIVE;
 						p_task_system_dta->flag = false;
 					}
+
+					// only during IDLE state, the configuration data can be saved
+					if(p_task_system_dta->event = EV_SYS_SAVE_CONFIG)
+					{
+						save_data(&(p_shared_temperature_dta->low_temp),&(p_shared_temperature_dta->high_temp),&(p_shared_temperature_dta->cl_temp));
+						p_task_system_dta->state = ST_SYS_XX_IDLE;
+						p_task_system_dta->flag = false;
+					}
 				}
 
 				break;
+
+
 
 				// CORREGIR Y TERMINAR
 			case ST_SYS_LOW_TEMP:
