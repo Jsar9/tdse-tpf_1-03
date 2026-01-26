@@ -72,9 +72,9 @@ task_menu_dta_t task_menu_dta =
 			false,
 			INITIAL_ID_MENU,
 			INITIAL_PARAMETER,
-			INITIAL_MENU_LOW_TEMP,
-			INITIAL_MENU_HIGH_TEMP,
-			INITIAL_MENU_CL_TEMP,
+			0,
+			0,
+			0,
 			false};
 
 
@@ -197,6 +197,8 @@ void task_menu_update(void *parameters)
 			{
 				case ST_MAIN_MENU:
 
+
+
 					/******************** START DISPLAY MSSGS********************/
 					displayCharPositionWrite(0, 0);
 					displayStringWrite("     Main menu:     ");
@@ -224,9 +226,6 @@ void task_menu_update(void *parameters)
 					// cheks if there's a new event
 					if(p_task_menu_dta->flag ==  true )
 					{
-
-
-
 						// actions - next
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
 						{
@@ -255,7 +254,7 @@ void task_menu_update(void *parameters)
 						{
 							p_task_menu_dta->state = ST_SETUP_MODE;
 
-							put_event_task_system(EV_SYS_XX_IDLE); //turns off the system during setup mode
+							put_event_task_system(EV_SYS_XX_IDLE); //turns off the main system during setup mode
 							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE); //turns off the temp system during setup mode
 
 							// stores in menu_dta structure the current configuration values
@@ -276,7 +275,18 @@ void task_menu_update(void *parameters)
 						}
 					}
 
+					/*********************** FINISH MENU INTERACTIONS ***********************/
+
 					break;
+
+
+
+
+
+
+
+
+
 
 				case ST_NORMAL_MODE:
 
@@ -294,6 +304,9 @@ void task_menu_update(void *parameters)
 					/******************** FINISH DISPLAY MSSGS********************/
 
 
+
+
+
 					/********************** START MENU INTERACTION **********************/
 
 
@@ -309,9 +322,23 @@ void task_menu_update(void *parameters)
 						}
 					}
 
+
+					/*********************** FINISH MENU INTERACTIONS ***********************/
+
 					break;
 
+
+
+
+
+
+
+
+
+
 				case ST_SETUP_MODE:
+
+					/*********************** START MENU INTERACTIONS ***********************/
 
 					if(p_task_menu_dta->flag ==  true )
 					{
@@ -375,7 +402,18 @@ void task_menu_update(void *parameters)
 						}
 					}
 
+					/*********************** FINISH MENU INTERACTIONS ***********************/
+
 					break;
+
+
+
+
+
+
+
+
+
 
 				case ST_LOW_TEMP :
 
@@ -428,6 +466,15 @@ void task_menu_update(void *parameters)
 
 					break;
 
+
+
+
+
+
+
+
+
+
 				case ST_HIGH_TEMP :
 
 					if(p_task_menu_dta->flag ==  true )
@@ -476,6 +523,15 @@ void task_menu_update(void *parameters)
 
 					break;
 
+
+
+
+
+
+
+
+
+
 				case ST_CL_TEMP :
 
 					if(p_task_menu_dta->flag ==  true )
@@ -520,6 +576,15 @@ void task_menu_update(void *parameters)
 					}
 
 					break;
+
+
+
+
+
+
+
+
+
 
 				default:
 

@@ -107,7 +107,6 @@ void read_data (void* low_temp, void* high_temp, void* cl_temp)
 
 void save_data(void* low_temp, void* high_temp, void* cl_temp)
 {
-
 	// avoids null pointer assignment
 	if (low_temp && high_temp && cl_temp)
 	{
