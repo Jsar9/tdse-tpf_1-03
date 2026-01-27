@@ -175,74 +175,133 @@ void task_temp_sys_update(void *parameters)
 
 		switch (p_task_temp_sys_dta->state)
 		{
+
+
+
 			case ST_TEMP_SYS_XX_ACTIVE:
 
-				// **************** EV_SYS_XX_ACTIVE
-				if ( (p_task_temp_sys_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event) )
+
+				/******************** STARTS EVENTS ********************/
+
+				if(p_task_temp_sys_dta->flag == true)
 				{
+					// ACTIVE EVENT
+					if (  EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event )
+					{
+						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
+					}
+
+					// IDLE EVENT
+					if (EV_SYS_XX_IDLE == p_task_temp_sys_dta->event)
+					{
+						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
+					}
+
+					p_task_temp_sys_dta->flag = false;
+				}
+
+				/******************** FINISHES EVENTS ********************/
+
+
+
+				/************************* STARTS TEMPERATURE SYSTEM BEHAVIOUR DURING ACTIVE MODE *************************/
+				if (p_task_temp_sys_dta->state == ST_TEMP_SYS_XX_ACTIVE)
+				{
+
 					if(p_shared_temperature_dta->adc_end_of_conversion == true)
-					{
-						/***************************	TEMPERATURE CONVERTION	********************/
-								// update the previous temperature
-								p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
 
-								// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
-								v_aux = (3.3 * p_shared_temperature_dta->adc_read) / 4095;
+						{
 
-								// converts voltage to temperature considering LM35 sensor (10mV / °C) and update the current temperature
-								p_shared_temperature_dta->current_temp = v_aux / 0.01;
 
-								// sets false in the adc_end_of_conversion flag because the data was used
-								p_shared_temperature_dta -> adc_end_of_conversion = false;
 
-						/****************************************************************************/
-					}
 
-					if(p_shared_temperature_dta->previous_temp > p_shared_temperature_dta->current_temp)
-					{
-						put_event_task_system(EV_SYS_TEMP_DECREASING);
-					}
 
-					if(p_shared_temperature_dta->current_temp > p_shared_temperature_dta->previous_temp)
-					{
-						put_event_task_system(EV_SYS_TEMP_INCREASING);
-					}
+							/******************** START TEMPERATURE CONVERSION ********************/
 
-					// cancel the flag event
-					p_task_temp_sys_dta->flag = false;
+							// update the previous temperature
+							p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
 
-					// keep in active mode
-					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
+							// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
+							v_aux = (3.3 * p_shared_temperature_dta->adc_read) / 4095;
+
+							// converts voltage to temperature considering LM35 sensor (10mV / °C)
+							// 	and update the current temperature
+							p_shared_temperature_dta->current_temp = v_aux / 0.01;
+
+							/******************** FINISH TEMPERATURE CONVERSION ********************/
+
+
+
+
+
+							/************* STARTS EVENTS FOR MAIN SYSTEM *************/
+
+							if(p_shared_temperature_dta->previous_temp > p_shared_temperature_dta->current_temp)
+
+								{
+									put_event_task_system(EV_SYS_TEMP_DECREASING);
+								}
+
+
+
+
+							if(p_shared_temperature_dta->current_temp > p_shared_temperature_dta->previous_temp)
+								{
+									put_event_task_system(EV_SYS_TEMP_INCREASING);
+								}
+
+							/************* FINISHES EVENTS FOR MAIN SYSTEM *************/
+
+
+
+
+
+							// sets false in the adc_end_of_conversion flag because the data was used
+							p_shared_temperature_dta -> adc_end_of_conversion = false;
+						}
+
+				/************************* FINISHES TEMPERATURE SYSTEM BEHAVIOUR DURING ACTIVE MODE *************************/
+
+
 				}
-
-
-
-				// **************** EV_SYS_XX_IDLE
-				if ((p_task_temp_sys_dta->flag) && (EV_SYS_XX_IDLE == p_task_temp_sys_dta->event))
-				{
-					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
-
-					p_task_temp_sys_dta->flag = false;
-				}
-
 
 				break;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			case ST_TEMP_SYS_XX_IDLE:
 
-				// **************** EV_SYS_XX_ACTIVE
-				if ((p_task_temp_sys_dta->flag) && (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event))
+				if(p_task_temp_sys_dta->flag == true)
 				{
-					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
-					p_task_temp_sys_dta->flag = false;
+
+					// ACTIVE EVENT
+					if (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event)
+					{
+						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
+					}
+
+					// IDLE EVENT
+					if(EV_SYS_XX_IDLE == p_task_temp_sys_dta->event)
+					{
+						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
+					}
+
+					p_task_temp_sys_dta->flag= false;
 				}
 
-				// **************** EV_SYS_XX_IDLE
-				if((p_task_temp_sys_dta->flag) && (EV_SYS_XX_IDLE == p_task_temp_sys_dta->event))
-				{
-					p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
-					p_task_temp_sys_dta->flag = false;
-				}
 
 				break;
 

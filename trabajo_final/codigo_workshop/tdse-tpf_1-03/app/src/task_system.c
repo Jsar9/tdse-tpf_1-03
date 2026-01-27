@@ -295,12 +295,6 @@ void task_system_update(void *parameters)
 
 					}
 
-
-					/*if ( p_task_system_dta->event == EV_SYS_XX_ACTIVE )
-					{
-						p_task_system_dta->state = ST_SYS_LOW_TEMP;
-						p_task_system_dta->flag = false;
-					}*/
 				}
 
 				break;
@@ -338,6 +332,8 @@ void task_system_update(void *parameters)
 
 				// CORREGIR Y TERMINAR
 			case ST_SYS_LOW_TEMP:
+
+
 				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
 				{
 					/*Resta terminar la máquina de estados*/
@@ -349,6 +345,10 @@ void task_system_update(void *parameters)
 				{
 					p_task_system_dta -> state = ST_SYS_MID_TEMP;
 				}
+
+
+				break;
+
 
 
 

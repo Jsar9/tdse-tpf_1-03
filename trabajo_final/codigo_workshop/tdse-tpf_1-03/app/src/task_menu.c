@@ -201,18 +201,21 @@ void task_menu_update(void *parameters)
 
 					/******************** START DISPLAY MSSGS********************/
 					displayCharPositionWrite(0, 0);
-					displayStringWrite("     Main menu:     ");
+					displayStringWrite("     Main menu      ");
 
 
 					if(p_task_menu_dta->id_mode == ID_NORMAL_MODE)
 					{
-						snprintf(menu_str, sizeof(menu_str), "Modo: NORMAL        ");
+						snprintf(menu_str, sizeof(menu_str), "Mode: NORMAL        ");
 					}
 
-					if(p_task_menu_dta->id_mode == ID_NORMAL_MODE)
+					if(p_task_menu_dta->id_mode == ID_SETUP_MODE)
 					{
-						snprintf(menu_str, sizeof(menu_str), "Modo: SETUP        ");
+						snprintf(menu_str, sizeof(menu_str), "Mode: SETUP         ");
 					}
+
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
 
 					/******************** FINISH DISPLAY MSSGS********************/
 
@@ -226,44 +229,52 @@ void task_menu_update(void *parameters)
 					// cheks if there's a new event
 					if(p_task_menu_dta->flag ==  true )
 					{
+
+
+
+
+
+
 						// actions - next
-						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode < QTY_MODES)
+						if((EV_MEN_NEX_ACTIVE == p_task_menu_dta->event) && (p_task_menu_dta->id_mode < QTY_MODES))
 						{
 							p_task_menu_dta->id_mode++;
-							p_task_menu_dta->flag = false;
 						}
 
-						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode >= QTY_MODES)
+						if((EV_MEN_NEX_ACTIVE == p_task_menu_dta->event) && (p_task_menu_dta->id_mode >= QTY_MODES))
 						{
 							p_task_menu_dta->id_mode = 0;
-							p_task_menu_dta->flag = false;
 						}
+
+
+
 
 
 
 						// actions - enter
-						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_NORMAL_MODE )
+						if ((EV_MEN_ENT_ACTIVE == p_task_menu_dta->event) && (p_task_menu_dta->id_mode == ID_NORMAL_MODE ))
 						{
 							p_task_menu_dta->state = ST_NORMAL_MODE;
 							put_event_task_system(EV_SYS_XX_ACTIVE); //turns on the main system during normal mode
 							put_event_task_temp_sys(EV_TEMP_SYS_XX_ACTIVE); //turns on the temp system during normal mode
-							p_task_menu_dta->flag = false;
 						}
 
-						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->id_mode == ID_SETUP_MODE )
+						if ((EV_MEN_ENT_ACTIVE == p_task_menu_dta->event) && (p_task_menu_dta->id_mode == ID_SETUP_MODE ))
 						{
 							p_task_menu_dta->state = ST_SETUP_MODE;
 
 							put_event_task_system(EV_SYS_XX_IDLE); //turns off the main system during setup mode
 							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE); //turns off the temp system during setup mode
 
-							// stores in menu_dta structure the current configuration values
+							// update menu_dta structure with the current configuration temp values
 							p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
 							p_task_menu_dta->high_temp= p_shared_temperature_dta -> high_temp ;
 							p_task_menu_dta->cl_temp= p_shared_temperature_dta -> cl_temp;
 
-							p_task_menu_dta->flag = false;
 						}
+
+
+
 
 
 
@@ -271,9 +282,18 @@ void task_menu_update(void *parameters)
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 						{
 							p_task_menu_dta->state = ST_MAIN_MENU;
-							p_task_menu_dta->flag = false;
 						}
+
+
+
+
+
+
+						// turns off the flag to avoid infinite events
+						p_task_menu_dta->flag = false;
 					}
+
+
 
 					/*********************** FINISH MENU INTERACTIONS ***********************/
 
@@ -294,14 +314,23 @@ void task_menu_update(void *parameters)
 					/******************** START DISPLAY MSSGS********************/
 
 					displayCharPositionWrite(0, 0);
-					displayStringWrite("    Normal mode:    ");
+					displayStringWrite("    Normal Mode     ");
 
-					// added a flag to print floats
-					snprintf(menu_str, sizeof(menu_str), "Temp: %.1f C       ", p_shared_temperature_dta->temp);
+					// added a flag to configuration for floats printing
+					snprintf(menu_str, sizeof(menu_str), "Temp: %.1f C        ", p_shared_temperature_dta->temp);
+
 					displayCharPositionWrite(0, 1);
 					displayStringWrite(menu_str);
 
 					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
+
+
 
 
 
@@ -318,8 +347,10 @@ void task_menu_update(void *parameters)
 							p_task_menu_dta->state = ST_MAIN_MENU;
 							put_event_task_system(EV_SYS_XX_IDLE);  //turns off the system when esc is pressed
 							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE);
-							p_task_menu_dta->flag = false;
 						}
+
+						// turns off the flag to avoid infinite events
+						p_task_menu_dta->flag = false;
 					}
 
 
@@ -338,46 +369,72 @@ void task_menu_update(void *parameters)
 
 				case ST_SETUP_MODE:
 
+					/******************** START DISPLAY MSSGS********************/
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("     Setup Mode     ");
+
+
+					if(p_task_menu_dta->parameter == ID_LOW_TEMP_PARAMETER)
+					{
+						snprintf(menu_str, sizeof(menu_str), "Param: Low Temp     ");
+					}
+
+					if(p_task_menu_dta->parameter == ID_HIGH_TEMP_PARAMETER)
+					{
+						snprintf(menu_str, sizeof(menu_str), "Param: High Temp    ");
+					}
+
+					if(p_task_menu_dta->parameter == ID_CL_TEMP_PARAMETER)
+					{
+						snprintf(menu_str, sizeof(menu_str), "Param: Cl Temp      ");
+					}
+
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
 					/*********************** START MENU INTERACTIONS ***********************/
 
 					if(p_task_menu_dta->flag ==  true )
 					{
 
 						// actions - next
-						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->parameter < QTY_PARAMETERS)
+						if((EV_MEN_NEX_ACTIVE == p_task_menu_dta->event) &&  (p_task_menu_dta->parameter < QTY_PARAMETERS))
 						{
 							p_task_menu_dta->parameter++ ;
-
-
-
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter >= QTY_PARAMETERS )
 						{
 							p_task_menu_dta->parameter = 0 ;
-							p_task_menu_dta->flag = false;
 						}
+
+
 
 
 						// actions - enter
 						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_LOW_TEMP_PARAMETER)
 						{
 							p_task_menu_dta->state = ST_LOW_TEMP;
-							p_task_menu_dta->flag = false;
 						}
 
 						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_HIGH_TEMP_PARAMETER)
 						{
 							p_task_menu_dta->state = ST_HIGH_TEMP;
-							p_task_menu_dta->flag = false;
 						}
 
 						if (EV_MEN_ENT_ACTIVE == p_task_menu_dta->event && p_task_menu_dta->parameter == ID_CL_TEMP_PARAMETER)
 						{
 							p_task_menu_dta->state = ST_CL_TEMP;
-							p_task_menu_dta->flag = false;
 						}
+
+
 
 
 						// actions - esc
@@ -395,11 +452,24 @@ void task_menu_update(void *parameters)
 
 								//turns off flag for data storage
 								p_task_menu_dta->save_data_required = false;
+
+
+
+								// *************   Display MSG for Saving
+								snprintf(menu_str, sizeof(menu_str), "Config Saved        ");
+								displayCharPositionWrite(0, 1);
+								displayStringWrite(menu_str);
+								// *************
+
+
 							}
 
 							p_task_menu_dta->state = ST_MAIN_MENU;
-							p_task_menu_dta->flag = false;
 						}
+
+
+						// turns off the flag to avoid infinite events
+						p_task_menu_dta->flag = false;
 					}
 
 					/*********************** FINISH MENU INTERACTIONS ***********************/
@@ -417,6 +487,39 @@ void task_menu_update(void *parameters)
 
 				case ST_LOW_TEMP :
 
+
+					/******************** START DISPLAY MSSGS********************/
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("     Setup Mode     ");
+
+
+					snprintf(menu_str, sizeof(menu_str), "Low Temp: %.1f C    ", p_task_menu_dta->low_temp);
+
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					/*********************** START MENU INTERACTIONS ***********************/
+
+
 					if(p_task_menu_dta->flag ==  true )
 					{
 
@@ -424,28 +527,22 @@ void task_menu_update(void *parameters)
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp < MAX_TEMP_VALUE  )
 						{
 							p_task_menu_dta->low_temp ++ ;
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp >= MAX_TEMP_VALUE )
 						{
 							p_task_menu_dta->low_temp = MIN_TEMP_VALUE ;
-							p_task_menu_dta->flag = false;
 						}
 
 						// actions - esc (resta)
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp > MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->low_temp --;
-
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->low_temp <= MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->low_temp = MAX_TEMP_VALUE;
-
-							p_task_menu_dta->flag = false;
 						}
 
 
@@ -458,11 +555,12 @@ void task_menu_update(void *parameters)
 							// returns to setup mode
 							p_task_menu_dta->state = ST_SETUP_MODE;
 
-							p_task_menu_dta->flag = false;
-
 						}
 
+						p_task_menu_dta->flag = false;
 					}
+
+					/*********************** FINISH MENU INTERACTIONS ***********************/
 
 					break;
 
@@ -477,6 +575,32 @@ void task_menu_update(void *parameters)
 
 				case ST_HIGH_TEMP :
 
+					/******************** START DISPLAY MSSGS********************/
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("     Setup Mode     ");
+
+
+					snprintf(menu_str, sizeof(menu_str), "High Temp: %.1f C   ", p_task_menu_dta->high_temp);
+
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+					/*********************** START MENU INTERACTIONS ***********************/
+
 					if(p_task_menu_dta->flag ==  true )
 					{
 
@@ -484,26 +608,22 @@ void task_menu_update(void *parameters)
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp < MAX_TEMP_VALUE  )
 						{
 							p_task_menu_dta->high_temp ++ ;
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp >= MAX_TEMP_VALUE )
 						{
-							p_task_menu_dta->high_temp = MIN_TEMP_VALUE ;
-							p_task_menu_dta->flag = false;
+							p_task_menu_dta->high_temp = MIN_TEMP_VALUE;
 						}
 
 						// actions - esc (resta)
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp > MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->high_temp --;
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->high_temp <= MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->high_temp = MAX_TEMP_VALUE;
-							p_task_menu_dta->flag = false;
 						}
 
 
@@ -515,11 +635,13 @@ void task_menu_update(void *parameters)
 
 							// returns to setup mode
 							p_task_menu_dta->state = ST_SETUP_MODE;
-
-							p_task_menu_dta->flag = false;
 						}
 
+						p_task_menu_dta->flag = false;
+
 					}
+
+					/*********************** FINISH MENU INTERACTIONS ***********************/
 
 					break;
 
@@ -534,32 +656,57 @@ void task_menu_update(void *parameters)
 
 				case ST_CL_TEMP :
 
+					/******************** START DISPLAY MSSGS********************/
+					displayCharPositionWrite(0, 0);
+					displayStringWrite("     Setup Mode     ");
+
+
+					snprintf(menu_str, sizeof(menu_str), "Clim Temp: %.1f C   ", p_task_menu_dta->cl_temp);
+
+					displayCharPositionWrite(0, 1);
+					displayStringWrite(menu_str);
+
+					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+					/*********************** START MENU INTERACTIONS ***********************/
+
 					if(p_task_menu_dta->flag ==  true )
 					{
 						// actions - next (suma)
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp < MAX_TEMP_VALUE  )
 						{
 							p_task_menu_dta->cl_temp ++;
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_NEX_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp >= MAX_TEMP_VALUE )
 						{
 							p_task_menu_dta->cl_temp = MIN_TEMP_VALUE;
-							p_task_menu_dta->flag = false;
 						}
 
 						// actions - esc (resta)
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp > MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->cl_temp --;
-							p_task_menu_dta->flag = false;
 						}
 
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event &&  p_task_menu_dta->cl_temp <= MIN_TEMP_VALUE  )
 						{
 							p_task_menu_dta->cl_temp = MAX_TEMP_VALUE;
-							p_task_menu_dta->flag = false;
 						}
 
 
@@ -571,9 +718,13 @@ void task_menu_update(void *parameters)
 
 							// returns to setup mode
 							p_task_menu_dta->state = ST_SETUP_MODE;
-							p_task_menu_dta->flag = false;
 						}
+
+						p_task_menu_dta->flag = false;
 					}
+
+
+					/*********************** FINISH MENU INTERACTIONS ***********************/
 
 					break;
 

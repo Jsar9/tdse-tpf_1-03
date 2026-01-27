@@ -18,6 +18,9 @@
  */
 
 uint32_t get_address (uint8_t page, uint16_t index) {
+
+
+		// START VALUE			PAGE STEP					SLOT STEP
     return FLASH_BASE_ADDR + (page * FLASH_PAGE_SIZE) + (index * sizeof(flash_data_t) );
 }
 

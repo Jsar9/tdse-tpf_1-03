@@ -96,7 +96,7 @@ typedef enum task_menu_st {	ST_MAIN_MENU,
 //defines the ID for each mode
 enum { ID_NORMAL_MODE, ID_SETUP_MODE };
 
-//defines the ID for each parameter from the System
+//defines the ID for each parameter from the temp system
 enum { ID_LOW_TEMP_PARAMETER, ID_HIGH_TEMP_PARAMETER, ID_CL_TEMP_PARAMETER };
 
 typedef struct
@@ -105,7 +105,7 @@ typedef struct
 	task_menu_st_t	state;
 	task_menu_ev_t	event;
 	bool			flag;
-	int 	id_menu;
+	int 	id_mode;
 	int parameter;
 	float low_temp;
 	float high_temp;
