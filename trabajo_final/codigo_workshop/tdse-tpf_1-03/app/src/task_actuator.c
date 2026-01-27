@@ -59,18 +59,33 @@
 #define DEL_LED_XX_MIN				0ul
 
 /********************** internal data declaration ****************************/
+
+
+/**
+ * typedef struct
+{
+	task_actuator_id_t	identifier;
+	GPIO_TypeDef *		gpio_port;
+	uint16_t			pin;
+	GPIO_PinState		led_on;
+	GPIO_PinState		led_off;
+	uint32_t			tick_blink;
+	uint32_t			tick_pulse;
+} task_actuator_cfg_t;
+ */
+
 const task_actuator_cfg_t task_actuator_cfg_list[] = {
 
-	{ID_LED_GREEN,  LED_GREEN_PORT,  LED_GREEN_PIN, LED_GREEN_ON,  LED_GREEN_OFF,
+	{ID_LED_GREEN,  LED_GREEN_GPIO_Port,  LED_GREEN_Pin, LED_GREEN_ON,  LED_GREEN_OFF,
 		DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 
-	{ID_LED_YELLOW,  LED_YELLOW_PORT,  LED_YELLOW_PIN, LED_YELLOW_ON,  LED_YELLOW_OFF,
+	{ID_LED_YELLOW,  LED_YELLOW_GPIO_Port,  LED_YELLOW_Pin, LED_YELLOW_ON,  LED_YELLOW_OFF,
 	 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 
-	{ID_LED_RED,  LED_RED_PORT,  LED_RED_PIN, LED_RED_ON,  LED_RED_OFF,
+	{ID_LED_RED,  LED_RED_GPIO_Port,  LED_RED_Pin, LED_RED_ON,  LED_RED_OFF,
 		 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 
-	{ID_LED_CL,  LED_CL_PORT,  LED_CL_PIN, LED_CL_ON,  LED_CL_OFF,
+	{ID_LED_CL,  LED_CL_GPIO_Port,  LED_CL_Pin, LED_CL_ON,  LED_CL_OFF,
 		 DEL_LED_XX_BLI, DEL_LED_XX_PUL}
 
 };
@@ -83,7 +98,9 @@ task_actuator_dta_t task_actuator_dta_list[] = {
 
 	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true},
 
-	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true}
+	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true},
+
+	{DEL_LED_XX_MIN, ST_LED_XX_OFF, EV_LED_XX_NOT_BLINK, true},
 };
 
 #define ACTUATOR_DTA_QTY	(sizeof(task_actuator_dta_list)/sizeof(task_actuator_dta_t))
