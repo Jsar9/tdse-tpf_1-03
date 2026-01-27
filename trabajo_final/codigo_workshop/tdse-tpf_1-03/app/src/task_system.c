@@ -70,7 +70,9 @@ task_system_dta_t task_system_dta =
 	{		DEL_SYS_XX_MIN,
 			ST_SYS_XX_IDLE,
 			EV_SYS_XX_IDLE,
-			false};
+			false,
+			false
+	};
 
 /********************** internal functions declaration ***********************/
 
@@ -355,31 +357,210 @@ void task_system_update(void *parameters)
 
 
 
-				// CORREGIR Y TERMINAR
+
+
+
+
+
+
+
+
 			case ST_SYS_LOW_TEMP:
 
 
-				if((p_task_system_dta->flag) && (EV_SYS_ == p_task_system_dta->event))
+				if(p_task_system_dta->flag == true)
 				{
-					/*Resta terminar la máquina de estados*/
+
+					/************************* STARTS EV_SYS_TEMP_INCREASING ***********************/
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->low_temp))
+					{
+						p_task_system_dta->state = ST_SYS_LOW_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_GREEN);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_GREEN);
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_INCREASING ***********************/
+
+
+
+
+
+
+
+
+
+
+					/************************* STARTS EV_SYS_TEMP_DECREASING ***********************/
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->low_temp))
+					{
+						p_task_system_dta->state = ST_SYS_LOW_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_GREEN);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_DECREASING ***********************/
+
+
+
+					// turns off the flag system event
+					p_task_system_dta->flag = false;
 				}
-
-
-				/*transition cases*/
-				if((p_task_system_dta->flag) && (p_shared_temperature_dta->current_temp > p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp))
-				{
-					p_task_system_dta -> state = ST_SYS_MID_TEMP;
-				}
-
 
 				break;
 
 
 
 
+
+			case ST_SYS_MID_TEMP:
+
+				if(p_task_system_dta->flag == true)
+				{
+
+					/************************* STARTS EV_SYS_TEMP_INCREASING ***********************/
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp <  p_shared_temperature_dta->high_temp) &&(p_shared_temperature_dta-> cooler == false))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						p_task_system_dta->cooler = true;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp) )
+					{
+						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
+						put_event_task_actuator(EV_LED_XX_ON, ID_LED_RED);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_INCREASING ***********************/
+
+
+
+
+
+
+
+
+
+
+
+					/************************* STARTS EV_SYS_TEMP_DECREASING ***********************/
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->cooler == true))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						p_task_system_dta->cooler = false;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->low_temp))
+					{
+						p_task_system_dta->state = ST_SYS_LOW_TEMP;
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_GREEN);
+					}
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_DECREASING ***********************/
+
+					// turns off the flag system event
+					p_task_system_dta->flag = false;
+				}
+
+				break;
+
+
+
+
+
+
+
+
+
+
+			case ST_SYS_HIGH_TEMP:
+
+
+				if(p_task_system_dta->flag == true)
+				{
+
+					/************************* STARTS EV_SYS_TEMP_INCREASING ***********************/
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp))
+					{
+						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_RED);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_INCREASING ***********************/
+
+
+
+
+
+
+
+
+
+
+					/************************* STARTS EV_SYS_TEMP_DECREASING ***********************/
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp))
+					{
+						p_task_system_dta->state = ST_SYS_MID_TEMP;
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_RED);
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+					}
+
+
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp))
+					{
+						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
+						put_event_task_actuator(EV_LED_XX_ON,ID_LED_RED);
+					}
+
+					/************************* FINISHES EV_SYS_TEMP_DECREASING ***********************/
+
+					// turns off the flag system event
+					p_task_system_dta->flag = false;
+				}
+
+				break;
+
+
+
+
+
 			default:
 
+				p_task_system_dta->tick = DEL_SYS_XX_MIN;
 				p_task_system_dta->state = ST_SYS_XX_IDLE;
+				p_task_system_dta->event = EV_SYS_XX_IDLE;
+				p_task_system_dta->flag = false;
+				p_task_system_dta->cooler = false;
 
 				break;
 		}

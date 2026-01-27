@@ -64,8 +64,8 @@ extern "C" {
 /* Events to excite Task System */
 typedef enum task_system_ev {EV_SYS_XX_IDLE,
 							 EV_SYS_XX_ACTIVE,
-							 EV_TEMP_INCREASING,
-							 EV_TEMP_DECREASING,
+							 EV_SYS_TEMP_INCREASING,
+							 EV_SYS_TEMP_DECREASING,
 							 EV_SYS_SAVE_CONFIG
 } task_system_ev_t;
 
@@ -83,6 +83,7 @@ typedef struct
 	task_system_st_t	state;
 	task_system_ev_t	event;
 	bool				flag;
+	bool				cooler;
 } task_system_dta_t;
 
 /********************** external data declaration ****************************/
