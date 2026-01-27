@@ -93,9 +93,9 @@ bool is_invalid(float val) {
 void read_data (void* low_temp, void* high_temp, void* cl_temp)
 {
 		// reading from flash memory
-		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
-		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
-		flash_read_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
+		flash_read(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
+		flash_read(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
+		flash_read(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
 }
 
 
@@ -114,9 +114,9 @@ void save_data(void* low_temp, void* high_temp, void* cl_temp)
 		flash_erase_page(SELECTED_PAGE);
 
 		//save the data in flash memory, using fixed addresses for each variable
-		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
-		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
-		flash_write_page(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
+		flash_write(SELECTED_PAGE, FLASH_SLOT_INDEX_LOW_TEMP, low_temp);
+		flash_write(SELECTED_PAGE, FLASH_SLOT_INDEX_HIGH_TEMP, high_temp);
+		flash_write(SELECTED_PAGE, FLASH_SLOT_INDEX_CL_TEMP, cl_temp);
 	}
 }
 
@@ -168,9 +168,11 @@ void task_system_init(void *parameters)
 
 	g_task_system_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
 
-	// *************************************************** INIT CONFIGURATION DATA
+	/*********************** START CONFIGURATION DATA ***********************/
 
-	float aux_low_temp, aux_high_temp, aux_cl_temp;
+	float aux_low_temp;
+	float aux_high_temp;
+	float aux_cl_temp;
 
 	read_data(&aux_low_temp,&aux_high_temp, &aux_cl_temp);
 
@@ -188,7 +190,7 @@ void task_system_init(void *parameters)
 	    }
 	    else
 	    {
-	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta and the menu structure
+	    	// if there's valid information stored in flash memory, it will be loaded in shared_temperature_dta
 	        LOGGER_LOG("loading stored data\r\n");
 
 	        p_shared_temperature_dta->low_temp  = aux_low_temp;
@@ -196,7 +198,7 @@ void task_system_init(void *parameters)
 	        p_shared_temperature_dta->cl_temp   = aux_cl_temp;
 	    }
 
-	/**********************************************************************/
+	/*********************** FINISHES CONFIGURATION DATA ***********************/
 
 }
 
@@ -260,13 +262,10 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_GREEN);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_RED);
-
-						p_task_system_dta->flag = false;
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL);
 					}
 
 
-					// if there's at least one event about the temperature, the active mode must check the current_temperature to
-					// decide which is the next state
 
 					// EACH STATE DECIDES WHAT TO DO CONSIDERING THE CURRENT_TEMP VALUE
 					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING || p_task_system_dta->event == EV_SYS_TEMP_DECREASING )
@@ -290,14 +289,32 @@ void task_system_update(void *parameters)
 						{
 							p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						}
-
-						p_task_system_dta->flag = false;
-
 					}
 
+
+					p_task_system_dta->flag = false;
 				}
 
 				break;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			case ST_SYS_XX_IDLE:
 
@@ -307,26 +324,34 @@ void task_system_update(void *parameters)
 					if (p_task_system_dta->event == EV_SYS_XX_IDLE)
 					{
 						p_task_system_dta->state = ST_SYS_XX_IDLE;
-						p_task_system_dta->flag = false;
 					}
 
 
 					if(p_task_system_dta->event == EV_SYS_XX_ACTIVE)
 					{
 						p_task_system_dta->state = ST_SYS_XX_ACTIVE;
-						p_task_system_dta->flag = false;
 					}
 
 					// only during IDLE state, the configuration data can be saved
 					if(p_task_system_dta->event = EV_SYS_SAVE_CONFIG)
 					{
 						save_data(&(p_shared_temperature_dta->low_temp),&(p_shared_temperature_dta->high_temp),&(p_shared_temperature_dta->cl_temp));
+
 						p_task_system_dta->state = ST_SYS_XX_IDLE;
-						p_task_system_dta->flag = false;
 					}
+
+
+
+					p_task_system_dta->flag = false;
 				}
 
 				break;
+
+
+
+
+
+
 
 
 

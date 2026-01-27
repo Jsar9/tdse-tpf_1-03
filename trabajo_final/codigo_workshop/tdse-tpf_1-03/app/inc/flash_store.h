@@ -17,9 +17,10 @@ typedef float flash_data_t; // the data type to store in flash memory
 
 /******************************** STORING CONFIGURATION **************************/
 #define SELECTED_PAGE 120
-#define FLASH_SLOT_INDEX_LOW_TEMP 0 //selected slot from SELECTED_PAGE
-#define FLASH_SLOT_INDEX_HIGH_TEMP 1
-#define FLASH_SLOT_INDEX_CL_TEMP 2
+
+
+//selected slots from SELECTED_PAGE
+enum { FLASH_SLOT_INDEX_LOW_TEMP, FLASH_SLOT_INDEX_HIGH_TEMP, FLASH_SLOT_INDEX_CL_TEMP};
 
 
 

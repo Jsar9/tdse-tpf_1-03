@@ -266,10 +266,17 @@ void task_menu_update(void *parameters)
 							put_event_task_system(EV_SYS_XX_IDLE); //turns off the main system during setup mode
 							put_event_task_temp_sys(EV_TEMP_SYS_XX_IDLE); //turns off the temp system during setup mode
 
+
+
+							/******************** START MENU DATA UPDATE *****************/
+
 							// update menu_dta structure with the current configuration temp values
-							p_task_menu_dta->low_temp= p_shared_temperature_dta -> low_temp;
-							p_task_menu_dta->high_temp= p_shared_temperature_dta -> high_temp ;
-							p_task_menu_dta->cl_temp= p_shared_temperature_dta -> cl_temp;
+							p_task_menu_dta->low_temp = p_shared_temperature_dta->low_temp;
+							p_task_menu_dta->high_temp = p_shared_temperature_dta->high_temp ;
+							p_task_menu_dta->cl_temp = p_shared_temperature_dta->cl_temp;
+
+							/******************** FINISHES MENU DATA UPDATE *****************/
+
 
 						}
 
@@ -393,6 +400,10 @@ void task_menu_update(void *parameters)
 					displayStringWrite(menu_str);
 
 					/******************** FINISH DISPLAY MSSGS********************/
+
+
+
+
 
 
 

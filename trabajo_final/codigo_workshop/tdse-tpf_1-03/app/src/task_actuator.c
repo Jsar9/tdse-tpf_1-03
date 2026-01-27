@@ -68,6 +68,9 @@ const task_actuator_cfg_t task_actuator_cfg_list[] = {
 	 	 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
 
 	{ID_LED_RED,  LED_RED_PORT,  LED_RED_PIN, LED_RED_ON,  LED_RED_OFF,
+		 DEL_LED_XX_BLI, DEL_LED_XX_PUL},
+
+	{ID_LED_CL,  LED_CL_PORT,  LED_CL_PIN, LED_CL_ON,  LED_CL_OFF,
 		 DEL_LED_XX_BLI, DEL_LED_XX_PUL}
 
 };
