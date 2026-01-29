@@ -61,7 +61,7 @@ main-build: tdse-tpf_1-03.elf secondary-outputs
 
 # Tool invocations
 tdse-tpf_1-03.elf tdse-tpf_1-03.map: $(OBJS) $(USER_OBJS) C:\Users\solek\Desktop\Facu\LabSE\trabajo_final\codigo_workshop\tdse-tpf_1-03\STM32F103RBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "tdse-tpf_1-03.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\solek\Desktop\Facu\LabSE\trabajo_final\codigo_workshop\tdse-tpf_1-03\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tdse-tpf_1-03.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "tdse-tpf_1-03.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\Users\solek\Desktop\Facu\LabSE\trabajo_final\codigo_workshop\tdse-tpf_1-03\STM32F103RBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tdse-tpf_1-03.map" -Wl,--gc-sections -static -u _printf_float --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
