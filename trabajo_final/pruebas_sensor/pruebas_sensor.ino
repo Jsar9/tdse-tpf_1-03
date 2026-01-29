@@ -13,7 +13,7 @@ unsigned long previous_time_sensor = 0;
 
 void setup() {
   // Initialize the serial port at 9600 baud
-  Serial.begin(1200);
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -23,7 +23,7 @@ void loop() {
   
   /********************************************* BEGIN SENSOR ROUTINE *********************************************/
 
-  if (current_time - previous_time >= SENSORS_INTERVAL)
+  if (current_time - previous_time_sensor >= SENSORS_INTERVAL)
     {
       // update previous_time_sensors value (last time into the sensors routine)
       previous_time_sensor = current_time;
@@ -48,8 +48,8 @@ void loop() {
       temperature = voltage / (voltage_conversion_value);
 
       // prints the current temperature value
-      Serial.print("Current temp:");
-      Serial.println(temperature);
+      // Serial.print("Current temp:");
+      // Serial.println(temperature);
 
       // send temperature data to Matlab via Serial Port
       matlab_send(temperature);
@@ -59,7 +59,7 @@ void loop() {
 
 
 
-    
+
 }
 
 
