@@ -252,6 +252,8 @@ void task_sensor_update(void *parameters)
 
 							default:
 
+
+
 								break;
 						}
 		}
