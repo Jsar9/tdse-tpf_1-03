@@ -49,6 +49,7 @@
 #include "app.h"
 #include "task_temp_sys_attribute.h"
 #include "task_temp_sys_interface.h"
+#include "task_system_interface.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_SYS_CNT_INI			0ul
@@ -127,7 +128,7 @@ void task_temp_sys_update(void *parameters)
 	float v_aux= 0;
 
 	//Initialize the pointer to temperature_dta
-	shared_temperature_t* p_shared_temperature_dta = (shared_temperature_t* )parameters;
+	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
 
 
 	/*****************/
@@ -186,13 +187,13 @@ void task_temp_sys_update(void *parameters)
 				if(p_task_temp_sys_dta->flag == true)
 				{
 					// ACTIVE EVENT
-					if (  EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event )
+					if (  EV_TEMP_SYS_XX_ACTIVE == p_task_temp_sys_dta->event )
 					{
 						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
 					}
 
 					// IDLE EVENT
-					if (EV_SYS_XX_IDLE == p_task_temp_sys_dta->event)
+					if (EV_TEMP_SYS_XX_IDLE == p_task_temp_sys_dta->event)
 					{
 						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
 					}

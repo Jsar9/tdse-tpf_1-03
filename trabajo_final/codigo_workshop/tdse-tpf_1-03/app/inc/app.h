@@ -45,6 +45,10 @@ extern "C" {
 
 /********************** inclusions *******************************************/
 
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+
 /********************** macros ***********************************************/
 #define TEST_0 (0)
 #define TEST_1 (1)
@@ -52,19 +56,24 @@ extern "C" {
 
 #define TEST_X (TEST_0)
 
+#define MIN_TEMP_VALUE 0
+
+#define MAX_TEMP_VALUE 120
+
 
 /********************** typedef **********************************************/
 
 typedef struct
 {
 	bool			adc_end_of_conversion;
-	float			adc_read;	//will be the current temperature from adc
+	uint16_t			adc_read;	//will be the current temperature from adc
 	float			current_temp; //it's the current converted adc read
 	float			previous_temp; //it's the previous temperature read
 
 	float 			low_temp;
 	float 			high_temp;
 	float 			cl_temp;
+	bool			cooler;
 } shared_temperature_dta_t;
 
 

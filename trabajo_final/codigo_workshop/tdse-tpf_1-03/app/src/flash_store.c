@@ -21,7 +21,7 @@ uint32_t get_address (uint8_t page, uint16_t index) {
 
 
 		// START VALUE			PAGE STEP					SLOT STEP
-    return FLASH_BASE_ADDR + (page * FLASH_PAGE_SIZE) + (index * sizeof(flash_data_t) );
+    return FLASH_BASE_ADDRESS + (page * FLASH_PAGE_SIZE) + (index * sizeof(flash_data_t) );
 }
 
 
@@ -52,7 +52,7 @@ void flash_erase_page (uint8_t page) {
     uint32_t page_error;
 
     erase_init_struct.TypeErase   = FLASH_TYPEERASE_PAGES;
-    erase_init_struct.PageAddress = FLASH_BASE_ADDR + (page * FLASH_PAGE_SIZE);
+    erase_init_struct.PageAddress = FLASH_BASE_ADDRESS + (page * FLASH_PAGE_SIZE);
     erase_init_struct.NbPages     = 1; // it stores the number of pages that will be deleted
 
     // erase the selected page using the address that it's stored in the PageAddress field

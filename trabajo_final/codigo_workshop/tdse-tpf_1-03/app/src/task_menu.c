@@ -49,6 +49,8 @@
 #include "app.h"
 #include "task_menu_attribute.h"
 #include "task_menu_interface.h"
+#include "task_system_interface.h"
+#include "task_temp_sys_interface.h"
 #include "display.h"
 
 /********************** macros and definitions *******************************/
@@ -324,7 +326,7 @@ void task_menu_update(void *parameters)
 					displayStringWrite("    Normal Mode     ");
 
 					// added a flag to configuration for floats printing
-					snprintf(menu_str, sizeof(menu_str), "Temp: %.1f C        ", p_shared_temperature_dta->temp);
+					snprintf(menu_str, sizeof(menu_str), "Temp: %.1f C        ", p_shared_temperature_dta->current_temp);
 
 					displayCharPositionWrite(0, 1);
 					displayStringWrite(menu_str);
@@ -751,7 +753,7 @@ void task_menu_update(void *parameters)
 				default:
 
 					p_task_menu_dta->tick  = DEL_MEN_XX_MIN;
-					p_task_menu_dta->state = ST_MEN_XX_IDLE;
+					p_task_menu_dta->state = ST_MAIN_MENU;
 					p_task_menu_dta->event = EV_MEN_ENT_IDLE;
 					p_task_menu_dta->flag  = false;
 

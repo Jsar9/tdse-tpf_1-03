@@ -4,7 +4,11 @@
 #include "stm32f1xx_hal.h" //library for hal functions
 
 #define FLASH_BASE_ADDRESS      0x08000000	// the initial flash address. First page address:  0X0800 0000 - 0x0800 03FF
-#define FLASH_PAGE_SIZE         1024  		// the size of one page in STM32F103RB board (1 KB)( obtained from user manual - medium density devices)
+
+#ifndef FLASH_PAGE_SIZE
+  #define FLASH_PAGE_SIZE 1024	// the size of one page in STM32F103RB board (1 KB)( obtained from user manual - medium density devices)
+#endif
+
 #define FLASH_TOTAL_PAGES       128   		// the amount of pages in STM32F103RB board (from user manual) (from 0 to 127)
 
 //typedef

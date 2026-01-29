@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 /********************** inclusions *******************************************/
-
+#include "app.h"
 /********************** macros ***********************************************/
 
 /********************** typedef **********************************************/
@@ -88,10 +88,6 @@ typedef enum task_menu_st {	ST_MAIN_MENU,
 #define INITIAL_ID_MENU 0 //First menu
 
 #define INITIAL_PARAMETER 1 //high_temp field
-
-#define MIN_TEMP_VALUE 0
-
-#define MAX_TEMP_VALUE 120
 
 //defines the ID for each mode
 enum { ID_NORMAL_MODE, ID_SETUP_MODE };

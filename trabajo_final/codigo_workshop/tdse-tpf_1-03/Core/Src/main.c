@@ -22,6 +22,13 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+/* Demo includes*/
+#include "logger.h"
+#include "dwt.h"
+
+/* Application includes*/
+#include "app.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -60,6 +67,8 @@ static void MX_ADC1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+extern void initialise_monitor_handles(void);
+
 /* USER CODE END 0 */
 
 /**
@@ -70,6 +79,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
+	initialise_monitor_handles();
 
   /* USER CODE END 1 */
 
@@ -95,6 +106,9 @@ int main(void)
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
+  /* Application Init */
+  app_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,6 +118,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	/* Application Update */
+	app_update();
   }
   /* USER CODE END 3 */
 }

@@ -51,6 +51,7 @@
 #include "task_system_interface.h"
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
+#include "flash_store.h"
 
 /********************** macros and definitions *******************************/
 #define G_TASK_SYS_CNT_INI			0ul
@@ -64,6 +65,10 @@
 /********************** internal data declaration ****************************/
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
+
+#define INITIAL_LOW_TEMP 10
+#define INITIAL_HIGH_TEMP 30
+#define INITIAL_CL_TEMP 20
 
 /*Stores the variables of the system*/
 task_system_dta_t task_system_dta =
@@ -210,7 +215,7 @@ void task_system_update(void *parameters)
 	bool b_time_update_required = false;
 
 	//Initialize the pointer to temperature_dta
-	shared_temperature_t* p_shared_temperature_dta = (shared_temperature_t* )parameters;
+	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
 
 	/* Update Task System Counter */
 	g_task_system_cnt++;
@@ -335,7 +340,7 @@ void task_system_update(void *parameters)
 					}
 
 					// only during IDLE state, the configuration data can be saved
-					if(p_task_system_dta->event = EV_SYS_SAVE_CONFIG)
+					if(p_task_system_dta->event == EV_SYS_SAVE_CONFIG)
 					{
 						save_data(&(p_shared_temperature_dta->low_temp),&(p_shared_temperature_dta->high_temp),&(p_shared_temperature_dta->cl_temp));
 

@@ -1,0 +1,4 @@
+../app/src/flash_store.c:20:10:get_address	1
+../app/src/flash_store.c:41:6:flash_erase_page	2
+../app/src/flash_store.c:86:6:flash_write	3
+../app/src/flash_store.c:140:6:flash_read	3

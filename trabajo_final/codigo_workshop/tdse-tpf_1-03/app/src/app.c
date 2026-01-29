@@ -44,9 +44,14 @@
 #include "dwt.h"
 
 /* Application & Tasks includes. */
+#include "app.h"
 #include "board.h"
 #include "task_sensor.h"
+#include "task_actuator.h"
+#include "task_system.h"
+#include "task_temp_sys.h"
 #include "task_menu.h"
+#include "task_adc.h"
 
 /********************** macros and definitions *******************************/
 #define G_APP_CNT_INI		0ul
