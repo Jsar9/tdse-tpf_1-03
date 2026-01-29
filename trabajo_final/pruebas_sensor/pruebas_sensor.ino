@@ -1,6 +1,6 @@
 #define SENSORS_INTERVAL 100
 
-const float max_voltage = 5.0;
+const float max_voltage = 3.3;
 const float adc_max_range = 1023.0;
 const float voltage_conversion_value = 0.01;
 
