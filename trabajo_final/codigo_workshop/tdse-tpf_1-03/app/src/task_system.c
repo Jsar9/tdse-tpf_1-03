@@ -70,6 +70,8 @@
 #define INITIAL_HIGH_TEMP 30
 #define INITIAL_CL_TEMP 20
 
+#define MAX_SENSOR_ERROR 1 // measured in °C
+
 /*Stores the variables of the system*/
 task_system_dta_t task_system_dta =
 	{		DEL_SYS_XX_MIN,
@@ -277,21 +279,21 @@ void task_system_update(void *parameters)
 					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING || p_task_system_dta->event == EV_SYS_TEMP_DECREASING )
 					{
 
-						if(p_shared_temperature_dta->current_temp <= p_shared_temperature_dta->low_temp)
+						if(p_shared_temperature_dta->current_temp <= p_shared_temperature_dta->low_temp + MAX_SENSOR_ERROR)
 						{
 							p_task_system_dta->state = ST_SYS_LOW_TEMP;
 						}
 
 
 						// if (current_temp > low_temp && current_temp < high_temp )
-						if( (p_shared_temperature_dta->current_temp > p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp) )
+						if( (p_shared_temperature_dta->current_temp > (p_shared_temperature_dta->low_temp + MAX_SENSOR_ERROR)) && (p_shared_temperature_dta->current_temp < (p_shared_temperature_dta->high_temp - MAX_SENSOR_ERROR)))
 						{
 							p_task_system_dta->state = ST_SYS_MID_TEMP;
 						}
 
 
 						// if (current_temp > high_temp )
-						if( p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp)
+						if( p_shared_temperature_dta->current_temp >= ( p_shared_temperature_dta->high_temp - MAX_SENSOR_ERROR))
 						{
 							p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						}
