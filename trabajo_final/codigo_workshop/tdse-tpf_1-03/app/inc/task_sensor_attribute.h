@@ -102,7 +102,6 @@ typedef struct
 	GPIO_TypeDef *		gpio_port;
 	uint16_t			pin;
 	GPIO_PinState		pressed;
-	uint32_t			tick_max;
 	task_sensor_ev_t	signal_up;
 	task_sensor_ev_t	signal_down;
 } task_sensor_cfg_t;

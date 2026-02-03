@@ -62,14 +62,14 @@
 /********************** internal data declaration ****************************/
 const task_sensor_cfg_t task_sensor_cfg_list[] = {
 
-	{ID_BTN_ENT,  BTN_ENT_PORT,  BTN_ENT_PIN,  BTN_ENT_PRESSED, DEL_BTN_XX_MAX,
-	 EV_MEN_ENT_IDLE,  EV_MEN_ENT_ACTIVE},
+	{ID_BTN_ENT,  BTN_ENT_PORT,  BTN_ENT_PIN,  BTN_ENT_PRESSED,
+			EV_MEN_ENT_IDLE,  EV_MEN_ENT_ACTIVE},
 
-	{ID_BTN_NEX,  BTN_NEX_PORT,  BTN_NEX_PIN,  BTN_NEX_PRESSED, DEL_BTN_XX_MAX,
-	 EV_MEN_NEX_IDLE,  EV_MEN_NEX_ACTIVE},
+	{ID_BTN_NEX,  BTN_NEX_PORT,  BTN_NEX_PIN,  BTN_NEX_PRESSED,	EV_MEN_NEX_IDLE,
+			EV_MEN_NEX_ACTIVE},
 
-	{ID_BTN_ESC,  BTN_ESC_PORT,  BTN_ESC_PIN,  BTN_ESC_PRESSED, DEL_BTN_XX_MAX,
-	 EV_MEN_ESC_IDLE,  EV_MEN_ESC_ACTIVE}
+	{ID_BTN_ESC,  BTN_ESC_PORT,  BTN_ESC_PIN,  BTN_ESC_PRESSED,	 EV_MEN_ESC_IDLE,
+			EV_MEN_ESC_ACTIVE}
 };
 
 #define SENSOR_CFG_QTY	(sizeof(task_sensor_cfg_list)/sizeof(task_sensor_cfg_t))
@@ -185,72 +185,115 @@ void task_sensor_update(void *parameters)
 								if (EV_BTN_XX_DOWN == p_task_sensor_dta->event)
 								{
 									p_task_sensor_dta->state = ST_BTN_XX_FALLING;
-									p_task_sensor_dta->tick = p_task_sensor_cfg->tick_max;
+									p_task_sensor_dta->tick = DEL_BTN_XX_MAX;
 								}
 
 								break;
 
+
+
+
+
+
+
 							case ST_BTN_XX_FALLING:
 
-								if (EV_BTN_XX_UP == p_task_sensor_dta->event)
+								if (p_task_sensor_dta->event == EV_BTN_XX_UP)
 								{
 									if(p_task_sensor_dta->tick > 0 )
 									{
 										p_task_sensor_dta->tick--;
 									}
-									else {
+
+									if(p_task_sensor_dta->tick == 0)
+									{
 										p_task_sensor_dta->state = ST_BTN_XX_UP;
 									}
 								}
-								else { //Cuando el evento es EV_BTN_XX_DOWN
+
+
+
+								if (p_task_sensor_dta->event == EV_BTN_XX_DOWN)
+								{
 									if(p_task_sensor_dta->tick > 0 )
 									{
-										//p_task_sensor_dta->state = ST_BTN_XX_FALLING;
 										p_task_sensor_dta->tick--;
-									}else {
-										put_event_task_menu(p_task_sensor_cfg->signal_up); //NO chequear
+									}
+
+									if(p_task_sensor_dta->tick == 0)
+									{
+										put_event_task_menu(p_task_sensor_cfg->signal_up);
 										p_task_sensor_dta->state = ST_BTN_XX_DOWN;
 									}
 								}
 
 								break;
 
+
+
+
+
+
+
 							case ST_BTN_XX_DOWN:
 
-								if (EV_BTN_XX_UP == p_task_sensor_dta->event)
+								if (p_task_sensor_dta->event == EV_BTN_XX_UP)
 								{
 									p_task_sensor_dta->state = ST_BTN_XX_RISING;
-									p_task_sensor_dta->tick = p_task_sensor_cfg->tick_max;
+									p_task_sensor_dta->tick = DEL_BTN_XX_MAX;
 								}
 
 								break;
 
+
+
+
+
+
+
 							case ST_BTN_XX_RISING:
-								if (EV_BTN_XX_UP == p_task_sensor_dta->event)
+
+								if (p_task_sensor_dta->event == EV_BTN_XX_UP)
 								{
 									if(p_task_sensor_dta->tick > 0 )
 									{
-										//p_task_sensor_dta->state = ST_BTN_XX_RISING;
 										p_task_sensor_dta->tick--;
-									}else{
+									}
+
+									if(p_task_sensor_dta->tick == 0)
+									{
 										p_task_sensor_dta->state = ST_BTN_XX_UP;
-										put_event_task_menu(p_task_sensor_cfg->signal_down); //no chequear
+										put_event_task_menu(p_task_sensor_cfg->signal_down);
 									}
-								} else { //CUANDO EL EVENTO ES EV_BTN_XX_DOWN
+								}
+
+
+								if(p_task_sensor_dta->event == EV_BTN_XX_DOWN)
+								{
 									if(p_task_sensor_dta->tick > 0 )
-									{ //tick positivo
-										//p_task_sensor_dta->state = ST_BTN_XX_RISING;
+									{
 										p_task_sensor_dta->tick--;
 									}
-									else{//tick nulo
+
+									if(p_task_sensor_dta->tick == 0)
+									{
 											p_task_sensor_dta->state = ST_BTN_XX_DOWN;
-										}
 									}
+								}
+
 								break;
+
+
+
+
+
+
 
 							default:
 
-
+								p_task_sensor_dta->state = ST_BTN_XX_UP;
+								p_task_sensor_dta->event = EV_BTN_XX_UP;
+								p_task_sensor_dta->tick = DEL_BTN_XX_MIN;
 
 								break;
 						}

@@ -83,7 +83,7 @@ typedef struct
 	task_system_st_t	state;
 	task_system_ev_t	event;
 	bool				flag;
-	bool				cooler;
+	bool				cooler_on;
 } task_system_dta_t;
 
 /********************** external data declaration ****************************/

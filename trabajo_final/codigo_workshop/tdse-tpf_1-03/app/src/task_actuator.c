@@ -347,6 +347,11 @@ void task_actuator_update(void *parameters)
 
 				default:
 
+					p_task_actuator_dta->event = EV_LED_XX_OFF;
+					p_task_actuator_dta->flag = false;
+					p_task_actuator_dta->state = ST_LED_XX_OFF;
+					p_task_actuator_dta->tick = DEL_LED_XX_MIN;
+
 					break;
 			}
 		}

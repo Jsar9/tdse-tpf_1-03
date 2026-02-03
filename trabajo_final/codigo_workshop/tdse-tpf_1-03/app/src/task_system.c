@@ -265,7 +265,6 @@ void task_system_update(void *parameters)
 					{
 						p_task_system_dta->state = ST_SYS_XX_IDLE;
 
-						// turns off all leds
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_GREEN);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_RED);
@@ -436,10 +435,10 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
 					}
 
-					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp <  p_shared_temperature_dta->high_temp) &&(p_shared_temperature_dta-> cooler == false))
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp <  p_shared_temperature_dta->high_temp) &&(p_shared_temperature_dta-> cooler_on == false))
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
-						p_task_system_dta->cooler = true;
+						p_task_system_dta->cooler_on = true;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
 					}
 
@@ -470,10 +469,10 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
 					}
 
-					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->cooler == true))
+					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->cooler_on == true))
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
-						p_task_system_dta->cooler = false;
+						p_task_system_dta->cooler_on = false;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
 					}
 
@@ -565,7 +564,7 @@ void task_system_update(void *parameters)
 				p_task_system_dta->state = ST_SYS_XX_IDLE;
 				p_task_system_dta->event = EV_SYS_XX_IDLE;
 				p_task_system_dta->flag = false;
-				p_task_system_dta->cooler = false;
+				p_task_system_dta->cooler_on = false;
 
 				break;
 		}
