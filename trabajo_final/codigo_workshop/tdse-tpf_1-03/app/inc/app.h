@@ -73,7 +73,7 @@ typedef struct
 	float 			low_temp;
 	float 			high_temp;
 	float 			cl_temp;
-	bool			cooler;
+	bool			cooler_on;
 } shared_temperature_dta_t;
 
 

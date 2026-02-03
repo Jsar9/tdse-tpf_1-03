@@ -74,9 +74,9 @@ task_menu_dta_t task_menu_dta =
 			false,
 			INITIAL_ID_MENU,
 			INITIAL_PARAMETER,
-			0,
-			0,
-			0,
+			INITIAL_LOW_TEMP,
+			INITIAL_HIGH_TEMP,
+			INITIAL_CL_TEMP,
 			false};
 
 
