@@ -80,8 +80,6 @@ task_sensor_dta_t task_sensor_dta_list[] = {
 
 	{DEL_BTN_XX_MIN, ST_BTN_XX_UP, EV_BTN_XX_UP},
 
-	{DEL_BTN_XX_MIN, ST_BTN_XX_UP, EV_BTN_XX_UP},
-
 	{DEL_BTN_XX_MIN, ST_BTN_XX_UP, EV_BTN_XX_UP}
 };
 
@@ -198,9 +196,9 @@ void task_sensor_update(void *parameters)
 								{
 									if(p_task_sensor_dta->tick > 0 )
 									{
-										//p_task_sensor_dta->state = ST_BTN_XX_FALLING;
 										p_task_sensor_dta->tick--;
-									}else {
+									}
+									else {
 										p_task_sensor_dta->state = ST_BTN_XX_UP;
 									}
 								}

@@ -144,11 +144,11 @@
 		cycle_counter_init();
 
 
-		__asm("CPSID i");  /*disable interrupts*/
-		g_app_tick_cnt = G_APP_TICK_CNT_INI;
-		g_task_sensor_tick_cnt = G_APP_TICK_CNT_INI;
-		g_task_menu_tick_cnt = G_APP_TICK_CNT_INI;
-		__asm("CPSIE i"); /*enable interrupts*/
+		//__asm("CPSID i");  /*disable interrupts*/
+		//g_app_tick_cnt = G_APP_TICK_CNT_INI;
+		//g_task_sensor_tick_cnt = G_APP_TICK_CNT_INI;
+		//g_task_menu_tick_cnt = G_APP_TICK_CNT_INI;
+		//__asm("CPSIE i"); /*enable interrupts*/
 
 	}
 

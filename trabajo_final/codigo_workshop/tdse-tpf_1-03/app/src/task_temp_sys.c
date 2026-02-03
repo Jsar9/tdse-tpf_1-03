@@ -52,8 +52,8 @@
 #include "task_system_interface.h"
 
 /********************** macros and definitions *******************************/
-#define G_TASK_SYS_CNT_INI			0ul
-#define G_TASK_SYS_TICK_CNT_INI		0ul
+#define G_TASK_TEMP_SYS_CNT_INI			0ul
+#define G_TASK_TEMP_SYS_TICK_CNT_INI		0ul
 
 #define DEL_TEMP_SYS_XX_MIN				0ul
 #define DEL_TEMP_SYS_XX_MED				50ul
@@ -94,7 +94,7 @@ void task_temp_sys_init(void *parameters)
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_temp_sys_init), p_task_temp_sys);
 	LOGGER_LOG("  %s is a %s\r\n", GET_NAME(task_temp_sys), p_task_temp_sys_);
 
-	g_task_temp_sys_cnt = G_TASK_SYS_CNT_INI;
+	g_task_temp_sys_cnt = G_TASK_TEMP_SYS_CNT_INI;
 
 	/* Print out: Task execution counter */
 	LOGGER_LOG("   %s = %lu\r\n", GET_NAME(g_task_temp_sys_cnt), g_task_temp_sys_cnt);
@@ -114,7 +114,7 @@ void task_temp_sys_init(void *parameters)
 	b_event = p_task_temp_sys_dta->flag;
 	LOGGER_LOG("   %s = %s\r\n", GET_NAME(b_event), (b_event ? "true" : "false"));
 
-	g_task_temp_sys_tick_cnt = G_TASK_SYS_TICK_CNT_INI;
+	g_task_temp_sys_tick_cnt = G_TASK_TEMP_SYS_TICK_CNT_INI;
 }
 
 void task_temp_sys_update(void *parameters)
@@ -138,7 +138,7 @@ void task_temp_sys_update(void *parameters)
 
 	/* Protect shared resource (g_task_temp_sys_tick) */
 	__asm("CPSID i");	/* disable interrupts*/
-    if (G_TASK_SYS_TICK_CNT_INI < g_task_temp_sys_tick_cnt)
+    if (G_TASK_TEMP_SYS_TICK_CNT_INI < g_task_temp_sys_tick_cnt)
     {
     	g_task_temp_sys_tick_cnt--;
     	b_time_update_required = true;
@@ -149,7 +149,7 @@ void task_temp_sys_update(void *parameters)
     {
 		/* Protect shared resource (g_task_temp_sys_tick) */
 		__asm("CPSID i");	/* disable interrupts*/
-		if (G_TASK_SYS_TICK_CNT_INI < g_task_temp_sys_tick_cnt)
+		if (G_TASK_TEMP_SYS_TICK_CNT_INI < g_task_temp_sys_tick_cnt)
 		{
 			g_task_temp_sys_tick_cnt--;
 			b_time_update_required = true;
