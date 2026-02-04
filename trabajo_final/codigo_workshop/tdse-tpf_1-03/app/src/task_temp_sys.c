@@ -73,7 +73,7 @@ task_temp_sys_dta_t task_temp_sys_dta =
 			false};
 
 
-const float voltage_ref = 3.3; //The reference voltage for ADC
+const float voltage_ref = 3.3; //The reference voltage for STM32F1
 
 const float voltage_to_temp_conversion = 0.01; // the conversion value for LM35DZ sensor is 10mV/°C
 
@@ -136,7 +136,7 @@ void task_temp_sys_update(void *parameters)
 	task_temp_sys_dta_t *p_task_temp_sys_dta;
 	bool b_time_update_required = false;
 
-	/*****************/
+	/******** BEGIN AUXILIAR VARIABLE DECLARATION *********/
 
 	//Initialize an auxiliar variable used for adc_read convertion
 	float v_aux= 0;
@@ -145,8 +145,7 @@ void task_temp_sys_update(void *parameters)
 	//Initialize the pointer to temperature_dta
 	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
 
-
-	/*****************/
+	/******** END AUXILIAR VARIABLE DECLARATION *********/
 
 	/* Update Task temp_sys Counter */
 	g_task_temp_sys_cnt++;
@@ -241,7 +240,7 @@ void task_temp_sys_update(void *parameters)
 							v_aux = ( voltage_ref * p_shared_temperature_dta->adc_read) / MAX_RAW_VALUE ;
 
 							// converts voltage to temperature considering LM35 sensor (10mV / °C)
-							temp_aux = v_aux/ voltage_to_temp_conversion;
+							temp_aux = v_aux / voltage_to_temp_conversion;
 
 							// update the current temperature using a FIR filter to avoid noise
 							p_shared_temperature_dta->current_temp = (alpha_fir * temp_aux) + ( (1 - alpha_fir) *  p_shared_temperature_dta->previous_temp) ;

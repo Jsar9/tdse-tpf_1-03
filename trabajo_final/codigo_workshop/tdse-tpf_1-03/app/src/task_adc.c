@@ -71,6 +71,19 @@ void task_adc_init(void *parameters)
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_adc_init), p_task_adc);
 
+	/*************** BEGIN HARDWARE CALIBRATION ***************/
+	// Stops ADC
+	HAL_ADC_Stop(&hadc1);
+
+	// Calibrate ADC
+	if (HAL_ADCEx_Calibration_Start(&hadc1) != HAL_OK)
+	{
+	    LOGGER_LOG("Error ADC calibration\r\n");
+	}
+	/*************** END HARDWARE CALIBRATION ***************/
+
+
+
 	p_shared_temperature_dta->adc_end_of_conversion = false;
 }
 
