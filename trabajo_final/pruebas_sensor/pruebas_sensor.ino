@@ -1,6 +1,6 @@
 #define SENSORS_INTERVAL 100
 
-const float max_voltage = 3.3;
+const float max_voltage = 5.0;
 const float adc_max_range = 1023.0;
 const float voltage_conversion_value = 0.01;
 
@@ -13,7 +13,7 @@ unsigned long previous_time_sensor = 0;
 
 void setup() {
   // Initialize the serial port at 9600 baud
-  Serial.begin(115200);
+  Serial.begin(2400);
 }
 
 void loop() {
@@ -42,17 +42,17 @@ void loop() {
       // prints the current voltage value 
       // Serial.print("Current voltage:");
       // Serial.println(voltage);
-      // Serial.print("\n");
+       Serial.print("\n");
 
       // temperature conversion
       temperature = voltage / (voltage_conversion_value);
 
       // prints the current temperature value
-      // Serial.print("Current temp:");
-      // Serial.println(temperature);
+       Serial.print("Current temp:");
+       Serial.println(temperature);
 
       // send temperature data to Matlab via Serial Port
-      matlab_send(temperature);
+      // matlab_send(temperature);
     }
 
     /********************************************* END SENSOR ROUTINE *********************************************/

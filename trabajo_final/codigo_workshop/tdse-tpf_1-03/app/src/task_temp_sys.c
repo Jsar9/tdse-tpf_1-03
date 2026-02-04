@@ -59,6 +59,7 @@
 #define DEL_TEMP_SYS_XX_MED				50ul
 #define DEL_TEMP_SYS_XX_MAX				500ul
 
+#define MAX_RAW_VALUE 4095
 
 /********************** internal data declaration ****************************/
 
@@ -71,11 +72,24 @@ task_temp_sys_dta_t task_temp_sys_dta =
 			EV_TEMP_SYS_XX_IDLE,
 			false};
 
+
+const float voltage_ref = 3.3; //The reference voltage for ADC
+
+const float voltage_to_temp_conversion = 0.01; // the conversion value for LM35DZ sensor is 10mV/°C
+
+
+
+
+
 /********************** internal functions declaration ***********************/
 
 /********************** internal data definition *****************************/
 const char *p_task_temp_sys 		= "Task Temp temp_sys (Temp temp_sys Statechart)";
 const char *p_task_temp_sys_ 		= "Non-Blocking & Update By Time Code";
+
+
+// FIR parameter used to filter temperature
+const float alpha_fir = 0.1;
 
 /********************** external data declaration ****************************/
 uint32_t g_task_temp_sys_cnt;
@@ -126,6 +140,7 @@ void task_temp_sys_update(void *parameters)
 
 	//Initialize an auxiliar variable used for adc_read convertion
 	float v_aux= 0;
+	float temp_aux = 0;
 
 	//Initialize the pointer to temperature_dta
 	shared_temperature_dta_t* p_shared_temperature_dta = (shared_temperature_dta_t* )parameters;
@@ -223,11 +238,14 @@ void task_temp_sys_update(void *parameters)
 							p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
 
 							// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
-							v_aux = (3.3 * p_shared_temperature_dta->adc_read) / 4095;
+							v_aux = ( voltage_ref * p_shared_temperature_dta->adc_read) / MAX_RAW_VALUE ;
 
 							// converts voltage to temperature considering LM35 sensor (10mV / °C)
-							// 	and update the current temperature
-							p_shared_temperature_dta->current_temp = v_aux / 0.01;
+							temp_aux = v_aux/ voltage_to_temp_conversion;
+
+							// update the current temperature using a FIR filter to avoid noise
+							p_shared_temperature_dta->current_temp = (alpha_fir * temp_aux) + ( (1 - alpha_fir) *  p_shared_temperature_dta->previous_temp) ;
+
 
 							/******************** FINISH TEMPERATURE CONVERSION ********************/
 
