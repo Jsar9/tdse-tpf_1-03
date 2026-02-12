@@ -306,13 +306,13 @@ void task_temp_sys_update(void *parameters)
 				{
 
 					// ACTIVE EVENT
-					if (EV_SYS_XX_ACTIVE == p_task_temp_sys_dta->event)
+					if (EV_TEMP_SYS_XX_ACTIVE == p_task_temp_sys_dta->event)
 					{
 						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_ACTIVE;
 					}
 
 					// IDLE EVENT
-					if(EV_SYS_XX_IDLE == p_task_temp_sys_dta->event)
+					if(EV_TEMP_SYS_XX_IDLE == p_task_temp_sys_dta->event)
 					{
 						p_task_temp_sys_dta->state = ST_TEMP_SYS_XX_IDLE;
 					}

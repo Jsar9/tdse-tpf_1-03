@@ -61,14 +61,9 @@
 #define DEL_SYS_XX_MED				50ul
 #define DEL_SYS_XX_MAX				500ul
 
-
 /********************** internal data declaration ****************************/
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
-
-#define INITIAL_LOW_TEMP 10
-#define INITIAL_HIGH_TEMP 30
-#define INITIAL_CL_TEMP 20
 
 #define MAX_SENSOR_ERROR 1 // measured in °C
 

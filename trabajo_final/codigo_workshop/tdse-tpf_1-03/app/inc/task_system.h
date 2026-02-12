@@ -47,10 +47,6 @@ extern "C" {
 
 /********************** macros ***********************************************/
 
-#define INITIAL_LOW_TEMP 20
-#define INITIAL_HIGH_TEMP 60
-#define INITIAL_CL_TEMP 35
-
 /********************* typedef **********************************************/
 
 /********************** external data declaration ****************************/
