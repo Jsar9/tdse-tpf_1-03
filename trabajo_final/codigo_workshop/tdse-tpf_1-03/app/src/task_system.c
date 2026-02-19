@@ -114,6 +114,9 @@ void save_data(void* low_temp, void* high_temp, void* cl_temp)
 	// avoids null pointer assignment
 	if (low_temp && high_temp && cl_temp)
 	{
+		// clears any flag error
+		__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPERR);
+
 		//erase the SELECTED_PAGE
 		flash_erase_page(SELECTED_PAGE);
 

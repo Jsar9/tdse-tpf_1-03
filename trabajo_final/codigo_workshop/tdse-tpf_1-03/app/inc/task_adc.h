@@ -51,6 +51,7 @@ extern "C" {
 
 /********************** external data declaration ****************************/
 extern uint32_t g_task_a_cnt;
+extern volatile uint32_t g_task_adc_tick_cnt;
 
 /********************** external functions declaration ***********************/
 void task_adc_init(void *parameters);

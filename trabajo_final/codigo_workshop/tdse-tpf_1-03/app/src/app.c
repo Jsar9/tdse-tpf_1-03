@@ -199,6 +199,7 @@
 		g_task_system_tick_cnt++;
 		g_task_actuator_tick_cnt++;
 		g_task_temp_sys_tick_cnt++;
+		g_task_adc_tick_cnt++;
 
 	}
 
