@@ -331,6 +331,10 @@ void task_menu_update(void *parameters)
 					displayCharPositionWrite(0, 1);
 					displayStringWrite(menu_str);
 
+
+
+
+
 					/******************** FINISH DISPLAY MSSGS********************/
 
 
@@ -350,6 +354,21 @@ void task_menu_update(void *parameters)
 
 					if(p_task_menu_dta->flag ==  true )
 					{
+
+						if(EV_MEN_PRINT_WARNING_MSG == p_task_menu_dta->event)
+						{
+							displayCharPositionWrite(0, 2);
+							displayStringWrite("WARNING: CRIT. TEMP.");
+						}
+
+
+						if( EV_MEN_CLEAR_WARNING_MSG == p_task_menu_dta->event)
+						{
+						        displayCharPositionWrite(0, 2);
+						        displayStringWrite("                    ");
+						}
+
+
 						// actions - esc
 						if(EV_MEN_ESC_ACTIVE == p_task_menu_dta->event)
 						{

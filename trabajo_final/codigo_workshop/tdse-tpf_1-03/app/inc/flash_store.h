@@ -9,7 +9,7 @@
   #define FLASH_PAGE_SIZE 1024	// the size of one page in STM32F103RB board (1 KB)( obtained from user manual - medium density devices)
 #endif
 
-#define FLASH_TOTAL_PAGES       128   		// the amount of pages in STM32F103RB board (from user manual) (from 0 to 127)
+#define FLASH_TOTAL_PAGES       128   		// the amount of pages in STM32F103RB board (obtained from user manual) (from 0 to 127)
 
 //typedef
 typedef float flash_data_t; // the data type to store in flash memory
