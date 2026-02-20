@@ -475,7 +475,7 @@ void task_system_update(void *parameters)
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
 						p_task_system_dta->cooler_on = false;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
-						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL);
+						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL); //turns off the CL led when temp is lower than cl_temp
 					}
 
 					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->low_temp))
