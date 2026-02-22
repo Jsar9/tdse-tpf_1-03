@@ -220,16 +220,10 @@ void task_temp_sys_update(void *parameters)
 
 
 				/************************* STARTS TEMPERATURE SYSTEM BEHAVIOUR DURING ACTIVE MODE *************************/
-				if (p_task_temp_sys_dta->state == ST_TEMP_SYS_XX_ACTIVE)
+
+				if(p_shared_temperature_dta->adc_end_of_conversion == true)
+
 				{
-
-					if(p_shared_temperature_dta->adc_end_of_conversion == true)
-
-						{
-
-
-
-
 
 							/******************** START TEMPERATURE CONVERSION ********************/
 
@@ -276,10 +270,8 @@ void task_temp_sys_update(void *parameters)
 
 							// sets false in the adc_end_of_conversion flag because the data was used
 							p_shared_temperature_dta -> adc_end_of_conversion = false;
-						}
 
 				/************************* FINISHES TEMPERATURE SYSTEM BEHAVIOUR DURING ACTIVE MODE *************************/
-
 
 				}
 
