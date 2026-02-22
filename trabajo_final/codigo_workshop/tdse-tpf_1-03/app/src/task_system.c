@@ -65,8 +65,6 @@
 
 #define SYSTEM_DTA_QTY	(sizeof(task_system_dta)/sizeof(task_system_dta_t))
 
-#define MAX_SENSOR_ERROR 1 // measured in °C
-
 /*Stores the variables of the system*/
 task_system_dta_t task_system_dta =
 	{		DEL_SYS_XX_MIN,
