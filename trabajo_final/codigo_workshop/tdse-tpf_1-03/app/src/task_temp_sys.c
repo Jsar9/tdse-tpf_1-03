@@ -237,8 +237,10 @@ void task_temp_sys_update(void *parameters)
 							temp_aux = v_aux / voltage_to_temp_conversion;
 
 							// update the current temperature using a FIR filter to avoid noise
-							p_shared_temperature_dta->current_temp = (alpha_fir * temp_aux) + ( (1 - alpha_fir) *  p_shared_temperature_dta->previous_temp) ;
+							//p_shared_temperature_dta->current_temp = (alpha_fir * temp_aux) + ( (1 - alpha_fir) *  p_shared_temperature_dta->previous_temp) ;
 
+							// update the current temperature without extra filtering
+							p_shared_temperature_dta->current_temp = temp_aux;
 
 							/******************** FINISH TEMPERATURE CONVERSION ********************/
 
