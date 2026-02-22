@@ -277,21 +277,21 @@ void task_system_update(void *parameters)
 					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING || p_task_system_dta->event == EV_SYS_TEMP_DECREASING )
 					{
 
-						if(p_shared_temperature_dta->current_temp <= p_shared_temperature_dta->low_temp + MAX_SENSOR_ERROR)
+						if(p_shared_temperature_dta->current_temp <= p_shared_temperature_dta->low_temp)
 						{
 							p_task_system_dta->state = ST_SYS_LOW_TEMP;
 						}
 
 
 						// if (current_temp > low_temp && current_temp < high_temp )
-						if( (p_shared_temperature_dta->current_temp > (p_shared_temperature_dta->low_temp + MAX_SENSOR_ERROR)) && (p_shared_temperature_dta->current_temp < (p_shared_temperature_dta->high_temp - MAX_SENSOR_ERROR)))
+						if( (p_shared_temperature_dta->current_temp > (p_shared_temperature_dta->low_temp)) && (p_shared_temperature_dta->current_temp < (p_shared_temperature_dta->high_temp)))
 						{
 							p_task_system_dta->state = ST_SYS_MID_TEMP;
 						}
 
 
 						// if (current_temp > high_temp )
-						if( p_shared_temperature_dta->current_temp >= ( p_shared_temperature_dta->high_temp - MAX_SENSOR_ERROR))
+						if( p_shared_temperature_dta->current_temp >= ( p_shared_temperature_dta->high_temp))
 						{
 							p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						}
