@@ -227,7 +227,7 @@ void task_temp_sys_update(void *parameters)
 
 							/******************** START TEMPERATURE CONVERSION ********************/
 
-							// update the previous temperature
+							// update the previous temperature with the old current_temp value
 							p_shared_temperature_dta->previous_temp = p_shared_temperature_dta->current_temp;
 
 							// update the v_aux calculating the read voltage, considering 3.3V reference and a 12 bits lecture from ADC
