@@ -459,6 +459,12 @@ void task_system_update(void *parameters)
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
 						put_event_task_actuator(EV_LED_XX_ON, ID_LED_RED);
 						put_event_task_menu(EV_MEN_PRINT_WARNING_MSG);
+						//turns on the cooler
+						if(p_shared_temperature_dta->cooler_on == false)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = true;
+						}
 
 					}
 
@@ -483,7 +489,7 @@ void task_system_update(void *parameters)
 						//turns off the cooler
 						if(p_shared_temperature_dta->cooler_on == true)
 						{
-							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL);
 							p_shared_temperature_dta->cooler_on = false;
 						}
 					}
@@ -494,6 +500,12 @@ void task_system_update(void *parameters)
 						p_task_system_dta->state = ST_SYS_LOW_TEMP;
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_GREEN);
+						//turns off the cooler
+						if(p_shared_temperature_dta->cooler_on == true)
+						{
+							put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = false;
+						}
 					}
 
 					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->high_temp))
