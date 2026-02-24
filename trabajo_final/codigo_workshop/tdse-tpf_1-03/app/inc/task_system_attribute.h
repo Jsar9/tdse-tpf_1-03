@@ -67,7 +67,8 @@ typedef enum task_system_ev {EV_SYS_XX_IDLE,
 							 EV_SYS_TEMP_INCREASING,
 							 EV_SYS_TEMP_DECREASING,
 							 EV_SYS_SAVE_CONFIG
-} task_system_ev_t;
+
+						} task_system_ev_t;
 
 /* State of Task System */
 typedef enum task_system_st {ST_SYS_XX_IDLE,

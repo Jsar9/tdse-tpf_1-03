@@ -250,7 +250,7 @@ void task_temp_sys_update(void *parameters)
 
 							/************* STARTS EVENTS FOR MAIN SYSTEM *************/
 
-							if(p_shared_temperature_dta->previous_temp > p_shared_temperature_dta->current_temp)
+							if(p_shared_temperature_dta->previous_temp >= p_shared_temperature_dta->current_temp)
 
 								{
 									put_event_task_system(EV_SYS_TEMP_DECREASING);

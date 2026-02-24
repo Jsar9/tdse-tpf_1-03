@@ -474,26 +474,37 @@ void task_menu_update(void *parameters)
 						{
 							if(p_task_menu_dta->save_data_required == true)
 							{
-								//update shared_temperature_dta struct using local menu data
-								p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
-								p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
-								p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
+								// checks appropiated values for temperature levels
+								if((p_task_menu_dta->low_temp < p_task_menu_dta->cl_temp) && (p_task_menu_dta->low_temp < p_task_menu_dta->high_temp) && (p_task_menu_dta->cl_temp < p_task_menu_dta->high_temp))
+								{
+									//update shared_temperature_dta struct using local menu data
+									p_shared_temperature_dta->low_temp = p_task_menu_dta->low_temp;
+									p_shared_temperature_dta->high_temp = p_task_menu_dta->high_temp;
+									p_shared_temperature_dta->cl_temp = p_task_menu_dta->cl_temp;
 
-								//sends the instruction to save the configuration data in flash memory
-								put_event_task_system(EV_SYS_SAVE_CONFIG);
+									//sends the instruction to save the configuration data in flash memory
+									put_event_task_system(EV_SYS_SAVE_CONFIG);
 
-								//turns off flag for data storage
-								p_task_menu_dta->save_data_required = false;
+									//turns off flag for data storage
+									p_task_menu_dta->save_data_required = false;
 
+									// *************   Display MSG for Error Configuration
+									snprintf(menu_str, sizeof(menu_str), "Config. Saved       ");
+									displayCharPositionWrite(0, 1);
+									displayStringWrite(menu_str);
+									// *************
+								}
+								else //if there's an error with temperature values
+								{
+									//turns off flag for data storage
+									p_task_menu_dta->save_data_required = false;
+									// *************   Display MSG for Error Configuration
+									snprintf(menu_str, sizeof(menu_str), "Config. Error       ");
+									displayCharPositionWrite(0, 1);
+									displayStringWrite(menu_str);
+									// *************
 
-
-								// *************   Display MSG for Saving
-								snprintf(menu_str, sizeof(menu_str), "Config Saved        ");
-								displayCharPositionWrite(0, 1);
-								displayStringWrite(menu_str);
-								// *************
-
-
+								}
 							}
 
 							p_task_menu_dta->state = ST_MAIN_MENU;

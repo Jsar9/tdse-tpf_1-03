@@ -51,6 +51,8 @@
 #include "task_system_interface.h"
 #include "task_actuator_attribute.h"
 #include "task_actuator_interface.h"
+#include "task_menu_interface.h"
+#include "task_menu_attribute.h"
 #include "flash_store.h"
 
 /********************** macros and definitions *******************************/
@@ -340,7 +342,6 @@ void task_system_update(void *parameters)
 					if(p_task_system_dta->event == EV_SYS_SAVE_CONFIG)
 					{
 						save_data(&(p_shared_temperature_dta->low_temp),&(p_shared_temperature_dta->high_temp),&(p_shared_temperature_dta->cl_temp));
-
 						p_task_system_dta->state = ST_SYS_XX_IDLE;
 					}
 
@@ -431,14 +432,25 @@ void task_system_update(void *parameters)
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+						//turns off the cooler
+						if(p_shared_temperature_dta->cooler_on == true)
+						{
+							put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = false;
+						}
 					}
 
-					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp <  p_shared_temperature_dta->high_temp) &&(p_shared_temperature_dta-> cooler_on == false))
+					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->current_temp <  p_shared_temperature_dta->high_temp))
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
-						p_task_system_dta->cooler_on = true;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
-						put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+
+						//turns on the cooler
+						if(p_shared_temperature_dta->cooler_on == false)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = true;
+						}
 					}
 
 					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp) )
@@ -446,6 +458,8 @@ void task_system_update(void *parameters)
 						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_YELLOW);
 						put_event_task_actuator(EV_LED_XX_ON, ID_LED_RED);
+						put_event_task_menu(EV_MEN_PRINT_WARNING_MSG);
+
 					}
 
 					/************************* FINISHES EV_SYS_TEMP_INCREASING ***********************/
@@ -466,15 +480,14 @@ void task_system_update(void *parameters)
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+						//turns off the cooler
+						if(p_shared_temperature_dta->cooler_on == true)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = false;
+						}
 					}
 
-					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->low_temp) && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->cl_temp) && (p_shared_temperature_dta->cooler_on == true))
-					{
-						p_task_system_dta->state = ST_SYS_MID_TEMP;
-						p_task_system_dta->cooler_on = false;
-						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
-						put_event_task_actuator(EV_LED_XX_OFF,ID_LED_CL); //turns off the CL led when temp is lower than cl_temp
-					}
 
 					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp < p_shared_temperature_dta->low_temp))
 					{
@@ -487,6 +500,13 @@ void task_system_update(void *parameters)
 					{
 						p_task_system_dta->state = ST_SYS_MID_TEMP;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_YELLOW);
+
+						//turns on the cooler
+						if(p_shared_temperature_dta->cooler_on == false)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = true;
+						}
 					}
 
 					/************************* FINISHES EV_SYS_TEMP_DECREASING ***********************/
@@ -515,9 +535,17 @@ void task_system_update(void *parameters)
 					/************************* STARTS EV_SYS_TEMP_INCREASING ***********************/
 					if(p_task_system_dta->event == EV_SYS_TEMP_INCREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp))
 					{
-						//p_task_system_dta->state = ST_SYS_HIGH_TEMP; //no change
+						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_RED);
 						put_event_task_menu(EV_MEN_PRINT_WARNING_MSG);
+
+						//turns on the cooler
+						if(p_shared_temperature_dta->cooler_on == false)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = true;
+						}
+
 					}
 
 					/************************* FINISHES EV_SYS_TEMP_INCREASING ***********************/
@@ -544,10 +572,20 @@ void task_system_update(void *parameters)
 
 					if(p_task_system_dta->event == EV_SYS_TEMP_DECREASING && (p_shared_temperature_dta->current_temp >= p_shared_temperature_dta->high_temp))
 					{
-						//p_task_system_dta->state = ST_SYS_HIGH_TEMP; //no change
+						p_task_system_dta->state = ST_SYS_HIGH_TEMP;
 						put_event_task_actuator(EV_LED_XX_ON,ID_LED_RED);
 						put_event_task_menu(EV_MEN_PRINT_WARNING_MSG);
+
+						//turns on the cooler
+						if(p_shared_temperature_dta->cooler_on == false)
+						{
+							put_event_task_actuator(EV_LED_XX_ON,ID_LED_CL);
+							p_shared_temperature_dta->cooler_on = true;
+						}
+
 					}
+
+
 
 					/************************* FINISHES EV_SYS_TEMP_DECREASING ***********************/
 

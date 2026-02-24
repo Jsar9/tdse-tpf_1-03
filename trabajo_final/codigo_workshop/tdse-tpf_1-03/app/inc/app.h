@@ -60,9 +60,9 @@ extern "C" {
 
 #define MAX_TEMP_VALUE 120
 
-#define INITIAL_LOW_TEMP 10
+#define INITIAL_LOW_TEMP 28
 #define INITIAL_HIGH_TEMP 30
-#define INITIAL_CL_TEMP 20
+#define INITIAL_CL_TEMP 29
 
 /********************** typedef **********************************************/
 
